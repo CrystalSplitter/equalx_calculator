@@ -1,0 +1,5 @@
+Ideas list:
+	- Derpibooru bot
+	- Logical calculator
+	- Java media player
+	- VOIP software
