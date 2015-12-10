@@ -2,4 +2,6 @@ Ideas list:
 	- Derpibooru bot
 	- Logical calculator
 	- Java media player
-	- VOIP software
+	- Phone Calculator
+	- Weather Command Line / dpkg
+	- Reddit gold bot
