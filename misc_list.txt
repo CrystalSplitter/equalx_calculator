@@ -3,3 +3,4 @@ Ideas list:
 	- Logical calculator
 	- Java media player
 	- VOIP software
+	- Phone Calculator
