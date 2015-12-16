@@ -1,0 +1,14 @@
+Functionalities:
+	- Order of operations
+	- History selection
+	- Multiline
+	- Display
+	- Touch
+Buttons:
+	- Negation button (?)
+	- Addition button
+	- Subtraction button
+	- Multiply button
+	- Division button
+	- Power/root button
+	- Eval button
