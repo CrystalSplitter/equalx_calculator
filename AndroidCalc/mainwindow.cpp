@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     text = new QListWidgetItem;
     text->setText("");
-    result = new QListWidgetItem;
+    equation = new QListWidgetItem;
 }
 
 MainWindow::~MainWindow()
@@ -134,6 +134,7 @@ void MainWindow::on_btnPlus_clicked()
 
 void MainWindow::on_btnEval_clicked()
 {
+
     /* Though this sounds like it would have worked,
        and it would have allowed for a more readable history that could be manipulated,
        it did not work for some undeterminable reason.
@@ -150,15 +151,33 @@ void MainWindow::on_btnEval_clicked()
     }*/
     /*It did not like it when I tried to append the original item "text"
       to the list so I made a new variable. I don't like it either.*/
-    result->setText(text->text());
-    items.append(result->text());
+    equation->setText(text->text());
+    QByteArray data = equation->text().toUtf8();
+    char* array = data.data();
+    items.append(equation->text());
+    QString result = "Sample_Text"; //Serves as the placeholder for an actual calculation.
+    items.append(result);
     ui->listDisplay->addItems(items);
     /*Since I was unable to get the loop to work to make sure it didn't print multiple times,
-      I had to clear the list right after it prints. It doesn't work when just result is
+      I had to clear the list right after it prints. It doesn't work when just equation is
       printed, but it works with the list for whatever reason.
       The good news is that the QListWidget should theoretically still hold all of the values.*/
     items.clear();
     text->setText("");
     ui->listDisplay->setCurrentRow(ui->listDisplay->currentRow() + 1);
     ui->listDisplay->takeItem(ui->listDisplay->row(text));
+    ui->listDisplay->item(ui->listDisplay->count() - 1)->setSelected(true);
+    ui->listDisplay->setFocus();
+}
+
+//Makes the history finite
+void MainWindow::on_listDisplay_currentRowChanged(int currentRow)
+{
+    if (ui->listDisplay->count() > 50)
+    {
+        for (int i = 0; i <= 10; i++)
+        {
+            ui->listDisplay->takeItem(i);
+        }
+    }
 }

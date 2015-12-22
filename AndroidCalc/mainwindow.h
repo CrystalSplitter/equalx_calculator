@@ -54,12 +54,14 @@ private slots:
 
     void on_btnEval_clicked();
 
+    void on_listDisplay_currentRowChanged(int currentRow);
+
 private:
     Ui::MainWindow *ui;
 protected:
-    QListWidgetItem *text;
-    QListWidgetItem *result;
-    QList<QString> items;
+    QListWidgetItem *text; // User input before it is put into the history
+    QListWidgetItem *equation; //The finalized equation
+    QList<QString> items; //How it gets printed pretty much
 };
 
 #endif // MAINWINDOW_H
