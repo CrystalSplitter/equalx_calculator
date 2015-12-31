@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QListWidgetItem>
+#include <QMessageBox>
+#include <QRegExp>
+#include "expressionelement.h"
 namespace Ui {
 class MainWindow;
 }
@@ -13,6 +16,8 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+    enum Operation{none, add, sub, multi, div, powa}; // The types of operations available on this calculator
+    enum ExpressionElemType{number,operation};
     ~MainWindow();
 
 private slots:
@@ -56,12 +61,20 @@ private slots:
 
     void on_listDisplay_currentRowChanged(int currentRow);
 
+    void displayError();
+
+    double calculateCharArray(char*);
+
+    ExpressionElement* listCalculation(QList<ExpressionElement*>);
+
+    //QList<ExpressionElement> generateList(char*);
 private:
     Ui::MainWindow *ui;
 protected:
     QListWidgetItem *text; // User input before it is put into the history
     QListWidgetItem *equation; //The finalized equation
     QList<QString> items; //How it gets printed pretty much
+    Operation OP_ORDER[5];
 };
 
 #endif // MAINWINDOW_H
