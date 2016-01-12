@@ -14,6 +14,7 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     enum Operation{none, add, sub, multi, div, powa}; // The types of operations available on this calculator
@@ -63,11 +64,11 @@ private slots:
 
     void displayError();
 
-    double calculateCharArray(char*);
+    double calculateCharArray(QVector<QChar>);
 
     ExpressionElement* listCalculation(QList<ExpressionElement*>);
 
-    //QList<ExpressionElement> generateList(char*);
+    QList<ExpressionElement*> generateList(QVector<QChar>);
 private:
     Ui::MainWindow *ui;
 protected:

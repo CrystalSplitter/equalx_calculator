@@ -3,12 +3,13 @@
 
 #include <QObject>
 #include <QRegExp>
+#include <QVector>
 class ExpressionElement : public QObject
 {
     Q_OBJECT
 public:
-    explicit ExpressionElement(char*, QObject *parent = 0);
-    explicit ExpressionElement(char,QObject *parent = 0);
+    explicit ExpressionElement(QVector<QChar>, QObject *parent = 0);
+    explicit ExpressionElement(QChar,QObject *parent = 0);
     explicit ExpressionElement(double, QObject *parent = 0);
     enum Operation{none, add, sub, multi, div, powa}; // The types of operations available on this calculator
     enum ExpressionElemType{number,operation};
@@ -23,7 +24,7 @@ signals:
     void error();
 public slots:
     QString toString();
-    double calc(ExpressionElement* before, ExpressionElement* after);
+    double calc(ExpressionElement before, ExpressionElement after);
 };
 
 #endif // EXPRESSIONELEMENT_H

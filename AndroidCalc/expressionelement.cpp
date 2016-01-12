@@ -1,12 +1,9 @@
 #include "expressionelement.h"
 #include <stdlib.h>
-#include <regex>
 #include <math.h>
-#include <string>
 
-ExpressionElement::ExpressionElement(char* a,QObject *parent) : QObject(parent)
+ExpressionElement::ExpressionElement(QVector<QChar>a,QObject *parent) : QObject(parent)
 {
-
         op = none;
         type = number;
         val = 0;
@@ -14,7 +11,7 @@ ExpressionElement::ExpressionElement(char* a,QObject *parent) : QObject(parent)
         int decimalPosition = -1;
         value = 0;
 
-        for (int i = 0; i < sizeof(a); i++)
+        for (int i = 0; i < a.size() - 1; i++)
         {
             if (a[i] == '.')
             {
@@ -32,29 +29,29 @@ ExpressionElement::ExpressionElement(char* a,QObject *parent) : QObject(parent)
             }
             if (!belowDecimal)
             {
-                val = val * 10 + atoi(&a[i]);
+                val = val * 10 + a.at(i).digitValue();
             }
             else
             {
                 double neg10Pow = (double)(10*(i-decimalPosition));
-                val = val + atoi(&a[i]) / neg10Pow;
+                val = val + a.at(i).digitValue() / neg10Pow;
             }
         }
         value = val;
 
 }
-ExpressionElement::ExpressionElement(char a,QObject *parent) : QObject(parent)
+ExpressionElement::ExpressionElement(QChar a,QObject *parent) : QObject(parent)
 {
     QRegExp regex("[0-9]");
     if (regex.exactMatch((QString)a))
     {
         type = number;
-        value = atoi(&a);
+        value = a.digitValue();
     }
     else
     {
         type = operation;
-        switch(a)
+        switch(a.combiningClass())
         {
             case '+':
                 op = add;
@@ -100,25 +97,25 @@ QString ExpressionElement::toString()
     return s;
 }
 
-double ExpressionElement::calc(ExpressionElement* before, ExpressionElement* after)
+double ExpressionElement::calc(ExpressionElement before, ExpressionElement after)
 {
     double tempVal;
     switch(op)
     {
             case add:
-                tempVal = before->value + after->value;
+                tempVal = before.value + after.value;
                 break;
             case sub:
-                tempVal = before->value - after->value;
+                tempVal = before.value - after.value;
                 break;
             case multi:
-                tempVal = before->value * after->value;
+                tempVal = before.value * after.value;
                 break;
             case div:
-                tempVal = before->value / after->value;
+                tempVal = before.value / after.value;
                 break;
             case powa:
-                tempVal = pow(before->value, after->value);
+                tempVal = pow(before.value, after.value);
                 break;
             default:
                 emit error();

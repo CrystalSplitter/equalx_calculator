@@ -150,12 +150,21 @@ void MainWindow::on_btnEval_clicked()
     }*/
     /*It did not like it when I tried to append the original item "text"
       to the list so I made a new variable. I don't like it either.*/
+    QMessageBox::warning(this, "Blah", "Crystal go screw yourself.");
     equation->setText(text->text());
-    QByteArray data = equation->text().toUtf8();
-    char* array = data.data();
+    QString blah = text->text();
+    QVector<QChar> array;
+    for (int i = 0; i < text->text().length() - 1; i++)
+    {
+        array.append(blah.at(i));
+    }
     items.append(equation->text());
+    for (int i = 0; i < array.length() - 1; i++)
+    {
+        items.append(array[i]);
+    }
     double value = calculateCharArray(array);
-    QString result = QString::number(value); //Serves as the placeholder for an actual calculation.
+    QString result = QString::number(value);
     items.append(result);
     ui->listDisplay->addItems(items);
     /*Since I was unable to get the loop to work to make sure it didn't print multiple times,
@@ -183,14 +192,13 @@ void MainWindow::on_listDisplay_currentRowChanged(int currentRow)
 }
 
 
-/* Any invocation of ExpressionElement results in the program blowing up. Do not touch until Crystal arrives.
-QList<ExpressionElement> MainWindow::generateList(char* a)
+QList<ExpressionElement*> MainWindow::generateList(QVector<QChar> a)
 {
     QList<ExpressionElement*> newList;
     QRegExp regex("[0-9]");
     bool grabbingSubExpression, grabbingNumber;
     int subExpressionStartingIndex = -1, numberStartingIndex = -1, numberEndingIndex = -1;
-    for (int i = 0; i < sizeof(a); i++)
+    for (int i = 0; i < a.length() - 1; i++)
     {
         if (a[i] == '(')
         {
@@ -203,24 +211,24 @@ QList<ExpressionElement> MainWindow::generateList(char* a)
             if(grabbingSubExpression)
             {
                 grabbingSubExpression = false;
-                char* subExpressionCharArray;
+                QVector<QChar> subExpressionCharArray;
                 for (int j = subExpressionStartingIndex; j < i; j++)
                 {
-                    subExpressionCharArray[j] = a[j];
+                    subExpressionCharArray.append(a[j]);
                 }
 
             }
         }
         else
         {
-            QMessageBox::warning(this, "Whut", "Error");
+            QMessageBox::warning(this, "Error", "Broke at generateList");
         }
         if (grabbingSubExpression)
         {
             continue;
         }
         bool isNumber = regex.exactMatch(QString(a[i])), isPoint = (a[i] == '.');
-        if (i == sizeof(a) - 1 && (!isNumber && !isPoint))
+        if (i == a.size() - 1 && (!isNumber && !isPoint))
         {
              displayError();
              break;
@@ -237,49 +245,62 @@ QList<ExpressionElement> MainWindow::generateList(char* a)
         else if(grabbingNumber)
         {
             grabbingNumber = false;
-            if (i == sizeof(a) - 1)
+            if (i == a.size() - 1)
             {
                 numberEndingIndex = i + 1;
-                char* newA;
+                QVector<QChar> newA;
                 for (int j = numberStartingIndex; j < numberEndingIndex; j++)
                 {
-                    newA[j] = a[j];
+                    newA.append(a[j]);
                 }
                 newList.append(new ExpressionElement(newA, this));
                 break;
             }
             else
             {
-                char* newA;
+                QVector<QChar> newA;
                 for (int j = numberStartingIndex; j < numberEndingIndex; j++)
                 {
-                    newA[j] = a[j];
+                    newA.append(a.at(j));
                 }
                 newList.append(new ExpressionElement(newA, this));
             }
         }
         newList.append(new ExpressionElement(a[i],this));
     }
-
+    QMessageBox::warning(this, "Error", "274");
+    for (int i = 0; i < newList.size(); i++)
+    {
+        QMessageBox::information(this, "Elements contents", QString(newList.at(i)->toString()));
+    }
+    return newList;
 }
-*/
+
 
 ExpressionElement* MainWindow::listCalculation(QList<ExpressionElement*> elements)
 {
     QList<ExpressionElement*> newList = elements;
+        for (int i = 0; i < elements.size(); i++)
+        {
+            QMessageBox::information(this, "Elements contents", QString(elements.at(i)->toString()));
+        }
+        QMessageBox::warning(this, "It makes it here", "282");
     if (elements.at(0)->type == operation)
     {
         ExpressionElement* zeroElement = new ExpressionElement((double)0);
         newList.replace(0, zeroElement);
     }
+        QMessageBox::warning(this, "It makes it here", "288");
     if (newList.size() == 2)
     {
         displayError();
     }
+            QMessageBox::warning(this, "It makes it here", "293");
+    QMessageBox::warning(this, "It Makes it here", "291");
     for(Operation e: OP_ORDER)
     {
         int opCount = 0;
-        for (int i = 0; i < newList.size(); i++)
+        for (int i = 0; i < newList.size() - 1; i++)
         {
             if (newList.at(i)->type == operation)
             {
@@ -295,8 +316,8 @@ ExpressionElement* MainWindow::listCalculation(QList<ExpressionElement*> element
                 ExpressionElement *elem = newList.at(i + 1);
                 if(elem->type == operation)
                 {
-                    double eval = elem->calc(newList.at(i),newList.at(i + 2));
-                    newList.replace(i, new ExpressionElement(eval, this));
+                    //double eval = elem->calc(newList.at(i),newList.at(i + 2));
+                    //newList.replace(i, new ExpressionElement(eval, this));
                     newList.removeAt(i + 2);
                     newList.removeAt(i + 1);
                     opCount--;
@@ -305,14 +326,16 @@ ExpressionElement* MainWindow::listCalculation(QList<ExpressionElement*> element
             i++;
         }
     }
+    QMessageBox::warning(this, "It makes it here", "324");
     return newList.at(0);
 }
 
-double MainWindow::calculateCharArray(char *a)
+double MainWindow::calculateCharArray(QVector<QChar> a)
 {
     double value = 0;
-    //QList<ExpressionElement> expressionList = generateList(a);
-    //value = listCalculation(expressionList)->value;
+    QList<ExpressionElement*> expressionList = generateList(a);
+    value = listCalculation(expressionList)->value;
+    QMessageBox::warning(this, "Error", "328");
     return value;
 }
 
