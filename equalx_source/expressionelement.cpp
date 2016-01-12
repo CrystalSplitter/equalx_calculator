@@ -6,6 +6,8 @@
 #include "expressionelement.h"
 
 
+ExpressionElement::ExpressionElement() : ExpressionElement::ExpressionElement(0.0) {}
+
 ExpressionElement::ExpressionElement(double val)
 {
     this->isNumber = true;
@@ -38,7 +40,7 @@ ExpressionElement::ExpressionElement(QVector<char> v)
     int decimalPosition = -1;
 
     // Loop through each element in the char array
-    for(unsigned int i = 0; i < v.size(); i++)
+    for(int i = 0; i < v.size(); i++)
     {
         // Check for decimal points
         if(v[i] == '.')
@@ -149,6 +151,10 @@ double ExpressionElement::calc(ExpressionElement before, ExpressionElement after
             break;
         case Operation::powa:
             value = pow(before.value, after.value);
+            break;
+        case Operation::none:
+            // ERROR HERE
+            value = 0;
             break;
     }
 

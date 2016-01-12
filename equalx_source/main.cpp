@@ -11,5 +11,6 @@ int main(int argc, char *argv[])
 
     StringCalculator::subMain();
 
-    return a.exec();
+    return 0;
+    //return a.exec();
 }

@@ -7,14 +7,15 @@
 
 class ExpressionElement
 {
-	public:
-		bool isNumber = true;
+    public:
+        bool isNumber = true;
         Operation::Enum op = Operation::none;
-		double value = 0;
+        double value = 0;
 
-	public:
-		ExpressionElement(double);
-		ExpressionElement(char);
+    public:
+        ExpressionElement();
+        ExpressionElement(double);
+        ExpressionElement(char);
         ExpressionElement(QVector<char>);
         QString toString();
         double calc(ExpressionElement, ExpressionElement);
