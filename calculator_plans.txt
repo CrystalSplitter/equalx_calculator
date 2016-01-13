@@ -33,3 +33,7 @@ Buttons:
 	- !
 	- nCm
 	- nPm
+
+	- hsin
+	- hcos
+	- htan
