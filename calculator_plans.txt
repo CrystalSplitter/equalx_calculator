@@ -12,3 +12,24 @@ Buttons:
 	- Division button
 	- Power/root button
 	- Eval button
+
+==========================================================================
+EXTENDED
+==========================================================================
+
+Buttons:
+	- log
+	- ln
+	- e
+	- pi
+
+	- sin
+	- cos
+	- tan
+	- arcsin
+	- arccos
+	- arctan
+
+	- !
+	- nCm
+	- nPm

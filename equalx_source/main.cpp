@@ -10,7 +10,6 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-
     StringCalculator::setup();
     double value = StringCalculator::calculateCharVector(StringCalculator::convertToVector("1/5"));
     qDebug() << value << '\n';

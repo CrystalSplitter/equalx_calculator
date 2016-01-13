@@ -11,7 +11,6 @@ class StringCalculator
 public:
     static const bool DEBUG = false;
 
-
 public:
     static void setup();
     static int subMain();
