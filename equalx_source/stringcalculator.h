@@ -13,6 +13,7 @@ public:
 
 
 public:
+    static void setup();
     static int subMain();
     static double calculateCharVector(QVector<char>);
     static ExpressionElement calculateList(QVector<ExpressionElement>);

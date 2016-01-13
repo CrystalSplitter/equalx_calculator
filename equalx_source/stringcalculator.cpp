@@ -11,13 +11,17 @@ static QVector<Operation::Enum> OP_ORDER = QVector<Operation::Enum>();
 // STRING CALCULATOR CODE
 // ============================================================================
 
-int StringCalculator::subMain()
+void StringCalculator::setup()
 {
     OP_ORDER.append(Operation::powa);
     OP_ORDER.append(Operation::mult);
     OP_ORDER.append(Operation::div);
     OP_ORDER.append(Operation::add);
     OP_ORDER.append(Operation::sub);
+}
+
+int StringCalculator::subMain()
+{
 
     QVector<char> val1 = convertToVector(QString("(9+3)^3"));
     double t = calculateCharVector(val1);
