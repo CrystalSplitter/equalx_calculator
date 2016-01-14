@@ -33,3 +33,7 @@ Buttons:
 	- !
 	- nCr
 	- nPr
+
+	- sinh
+	- cosh
+	- tanh
