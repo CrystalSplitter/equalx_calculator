@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QRegExp>
 #include "expressionelement.h"
+#include "stringcalculator.h"
 namespace Ui {
 class MainWindow;
 }
@@ -60,22 +61,27 @@ private slots:
 
     void on_btnEval_clicked();
 
+    void on_btnAnswer_clicked();
+
+    void on_btnDelete_clicked();
+
     void on_listDisplay_currentRowChanged(int currentRow);
+
+    void on_listDisplay_doubleClicked(const QModelIndex &index);
+
+    void on_btnSci_clicked();
 
     void displayError();
 
-    double calculateCharArray(QVector<QChar>);
+    void on_btnBack_clicked();
 
-    ExpressionElement* listCalculation(QList<ExpressionElement*>);
-
-    QList<ExpressionElement*> generateList(QVector<QChar>);
 private:
     Ui::MainWindow *ui;
 protected:
     QListWidgetItem *text; // User input before it is put into the history
     QListWidgetItem *equation; //The finalized equation
     QList<QString> items; //How it gets printed pretty much
-    Operation OP_ORDER[5];
+    double value; //Answer
 };
 
 #endif // MAINWINDOW_H
