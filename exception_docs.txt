@@ -1,0 +1,32 @@
+Filename: exception_docs.txt
+Author: Crystal Lord
+
+===========================================================================
+
+The parser section of the calculator can throw various exceptions. Due to
+my lack of knowledge with C++, I don't really want to risk putting in error
+classes. So instead, they are throw integers only. This is a guide for each
+exception.
+
+===========================================================================
+
+stringcalculator.cpp:
+
+	100	Somewhere along the line, the input somehow made an
+		expression element vector of size 2. This is impossible to
+		properly parse, and thus throws this exception. This would
+		likely fall under a syntax error.
+
+	101	The input string ended in an operation: e.g. 5+4*. This
+		is a user made syntax error
+	
+	102	The input has a closing parentheses, but not a matching
+		open parentheses. The user has made a syntax error.
+
+expressionelement.cpp:
+	
+	200	An invalid operator was in the input. The program does not
+		know how to handle it, and throws this exception.
+	
+	201	The operator that is being used to perform a calculation is
+		either not an operator or it's not surrounded by numbers.
