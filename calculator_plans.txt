@@ -31,5 +31,5 @@ Buttons:
 	- arctan
 
 	- !
-	- nCm
-	- nPm
+	- nCr
+	- nPr

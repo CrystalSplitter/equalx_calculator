@@ -104,7 +104,8 @@ void ExpressionElement::initA(char c)
                 break;
             default:
                 this->op = Operation::none;
-                // NOT AN OPERATION OR NUMBER ERROR
+                // ERROR: Not a number nor a valid operator
+                throw 200;
                 break;
         }
     }
@@ -130,7 +131,11 @@ double ExpressionElement::calc(ExpressionElement before, ExpressionElement after
 {
     if((this->isNumber) || !(before.isNumber) || !(after.isNumber))
     {
-        // ERROR
+        // SYNTAX ERROR: The expression is either
+        //    - not an operator
+        //    - not surrounded by number elements (such as "+*+")
+        throw 201;
+
     }
 
     double value;
@@ -153,8 +158,9 @@ double ExpressionElement::calc(ExpressionElement before, ExpressionElement after
             value = pow(before.value, after.value);
             break;
         case Operation::none:
-            // ERROR HERE
             value = 0;
+            // ERROR: Not a number nor a valid operator
+            throw 202;
             break;
     }
 

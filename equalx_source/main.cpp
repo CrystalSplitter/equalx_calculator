@@ -7,12 +7,20 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    //MainWindow w;
+    //w.show();
 
-    StringCalculator::setup();
-    double value = StringCalculator::calculateCharVector(StringCalculator::convertToVector("1/5"));
-    qDebug() << value << '\n';
+    try
+    {
+        StringCalculator::setup();
+        double value = StringCalculator::calculateCharVector(StringCalculator::convertToVector("a"));
+        qDebug() << value << '\n';
+    }
+    catch (int e)
+    {
+        qDebug() << "There was an error: Error Num" << e << '\n';
+    }
+
 
     return 0;
     //return a.exec();

@@ -20,16 +20,6 @@ void StringCalculator::setup()
     OP_ORDER.append(Operation::sub);
 }
 
-int StringCalculator::subMain()
-{
-
-    QVector<char> val1 = convertToVector(QString("(9+3)^3"));
-    double t = calculateCharVector(val1);
-
-    qDebug() << t << '\n';
-    return 0;
-}
-
 /*
  * calculateCharVector:
  *
@@ -41,6 +31,7 @@ int StringCalculator::subMain()
  */
 double StringCalculator::calculateCharVector(QVector<char> v)
 {
+
     QVector<ExpressionElement> expressionList = generateVector(v);
     ExpressionElement result = calculateList(expressionList);
     return result.value;
@@ -65,28 +56,35 @@ ExpressionElement StringCalculator::calculateList(QVector<ExpressionElement> ele
     // a single expression element.
     QVector<ExpressionElement> newVector = QVector<ExpressionElement>(elements);
 
+    // TODO: Instead of addition of 0, use multiply by -1
+
     // If the first element is an operation, put a 0 before it.
     // This allows us to properly handle things like negative numbers.
     if(!elements[0].isNumber)
-        newVector.append(ExpressionElement(0.0));
+        newVector.insert(0, ExpressionElement(0.0));
 
     if(newVector.size() == 2)
     {
-        // TODO:
-        //SYNTAX ERROR
+        // SYNTAX ERROR: It's impossible to have an ExpressionElement vector
+        // of size 2
+        throw 100;
     }
 
     // Loop through every operation, in the order defined by OP_ORDER
     for(int opIndex = 0; opIndex < OP_ORDER.size(); opIndex++)
     {
-        int opCount = 0; // Represents the number of this type of operation in the list.
+
+
+        int opCount = 0; // Represents the number of this typeof operation in the list.
 
         for(int e = 0; e < newVector.size(); e++)
         {
             ExpressionElement elem = newVector[e];
             if(!elem.isNumber)
             {
-                if(elem.op == OP_ORDER[opIndex]) { // Check to see if this is our operation
+                if(elem.op == OP_ORDER[opIndex])
+                {
+                    // Check to see if this is our operation
                     opCount++;
                 }
             }
@@ -178,10 +176,12 @@ QVector<ExpressionElement> StringCalculator::generateVector(QVector<char> inputV
             }
             else
             {
-                // TODO:
                 // SYNTAX ERROR: Closing paren but no opening paren
+                throw 102;
             }
         }
+
+
 
         if(grabbingSubExpression)
             continue;
@@ -194,11 +194,11 @@ QVector<ExpressionElement> StringCalculator::generateVector(QVector<char> inputV
         bool isNumber = isdigit(inputVector[i]);
         bool isPoint = (inputVector[i] == '.');
 
-        // Check to see if we are
+        // Check to see if we are getting a number
         if(i == inputVector.size()-1 && (!isNumber && !isPoint))
         {
-            // TODO:
             // SYNTAX ERROR: ENDED IN OPERATION
+            throw 101;
             break;
         }
 
