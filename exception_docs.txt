@@ -23,6 +23,11 @@ stringcalculator.cpp:
 	102	The input has a closing parentheses, but not a matching
 		open parentheses. The user has made a syntax error.
 
+	103	The input has a number next to an open parentheses. e.g.
+		5(10). While this is acceptable in mathematical notation,
+		this caculator does not support this functionality. The
+		user has made a syntax error.
+
 expressionelement.cpp:
 	
 	200	An invalid operator was in the input. The program does not

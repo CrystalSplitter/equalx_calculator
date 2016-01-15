@@ -73,8 +73,6 @@ ExpressionElement StringCalculator::calculateList(QVector<ExpressionElement> ele
     // Loop through every operation, in the order defined by OP_ORDER
     for(int opIndex = 0; opIndex < OP_ORDER.size(); opIndex++)
     {
-
-
         int opCount = 0; // Represents the number of this typeof operation in the list.
 
         for(int e = 0; e < newVector.size(); e++)
@@ -136,13 +134,14 @@ QVector<ExpressionElement> StringCalculator::generateVector(QVector<char> inputV
 {
     QVector<ExpressionElement> newVector = QVector<ExpressionElement>(0);
 
-    bool grabbingSubExpression = false;
+    // Empty vector case
+
+    int subExpressionCount = 0;
     int subExpressionStartingIndex = -1;
 
     bool grabbingNumber = false;
     int numberStartingIndex = -1; // Index of start of each number.
     int numberEndingIndex = -1; // Index where the last number ended off on.
-
 
     for(int i = 0; i < inputVector.size(); i++)
     {
@@ -153,38 +152,48 @@ QVector<ExpressionElement> StringCalculator::generateVector(QVector<char> inputV
         // Check for sub expressions first.
         if(inputVector[i] == '(')
         {
-            grabbingSubExpression = true;
-            subExpressionStartingIndex = i+1; // Starts at the next character
+            if(grabbingNumber)
+            {
+                // SYNTAX ERROR: number right next to open parentheses
+                throw 103;
+            }
+
+            if(subExpressionCount == 0)
+                subExpressionStartingIndex = i+1; // Starts at the next character
+            subExpressionCount++; // We just entered a sub expression, increment the count
             continue; // Move to next character
         }
         else if(inputVector[i] == ')')
         {
-            if(grabbingSubExpression)
-            {
-                grabbingSubExpression = false; // Close the sub expression off
 
-                // Recursively create the sub expression elements
-                QVector<char> subExpression = QVector<char>();
-                // q is an iterator!
-                for(int q = subExpressionStartingIndex; q < i; q++)
-                {
-                    subExpression.append(inputVector[q]);
-                }
-                double subValue = calculateCharVector(subExpression);
-                newVector.append(ExpressionElement(subValue));
-                continue; // Move to next character
-            }
-            else
+            subExpressionCount--; // We just exited a sub expression, decrement the count
+
+            if(subExpressionCount < 0)
             {
                 // SYNTAX ERROR: Closing paren but no opening paren
                 throw 102;
             }
+            else if(subExpressionCount == 0)
+            {
+                double subValue = subExpressionSolver(inputVector, subExpressionStartingIndex, i); // See utilities
+                newVector.append(ExpressionElement(subValue));
+                continue; // Move to next character
+            }
+
         }
 
-
-
-        if(grabbingSubExpression)
-            continue;
+        if(subExpressionCount > 0)
+        {
+            // Are we at the end?
+            if(i == inputVector.size()-1)
+            {
+                subExpressionCount = 0; // We are at the end, close the sub expression off
+                double subValue = subExpressionSolver(inputVector, subExpressionStartingIndex, i+1); // See utilities
+                newVector.append(ExpressionElement(subValue));
+                return newVector; // Return everything we just grabbed
+            }
+            continue; // We aren't at the end, move to next character
+        }
 
         // --------------------------------------------------------------------
         // NUMBER HANDLING
@@ -236,11 +245,26 @@ QVector<ExpressionElement> StringCalculator::generateVector(QVector<char> inputV
                 subCharVector.append(inputVector[q]);
             }
             // End subVector generation ---------------------------------------
-
             newVector.append(ExpressionElement(subCharVector));
+
+            // If we are at the end of the line, break the loop.
+            if(i == inputVector.size()-1)
+            {
+                break;
+            }
         }
         newVector.append(ExpressionElement(inputVector[i]));
+
+    } // End for loop
+
+
+    // If even after the large loop, the new vector has size 0
+    // Append a 0 to the end.
+    if(newVector.size() <= 0)
+    {
+        newVector.append(ExpressionElement(0.0));
     }
+
     return newVector;
 }
 
@@ -261,4 +285,23 @@ QVector<char> StringCalculator::convertToVector(QString s)
         newVector[i] = s.at(i).toLatin1();
     }
     return newVector;
+}
+
+/*
+ * subExpressionSolver
+ *
+ * Subexpression handling helper function. Used to avoid redundant code.
+ * Called from generateVector.
+ */
+double StringCalculator::subExpressionSolver(QVector<char> vect, int start, int end)
+{
+    // Recursively create the sub expression elements
+    QVector<char> subExpression = QVector<char>();
+    // q is an iterator!
+    for(int q = start; q < end; q++)
+    {
+        subExpression.append(vect[q]);
+    }
+    double subValue = calculateCharVector(subExpression);
+    return subValue;
 }
