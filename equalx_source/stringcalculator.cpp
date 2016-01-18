@@ -253,6 +253,10 @@ QVector<ExpressionElement> StringCalculator::generateVector(QVector<char> inputV
                 break;
             }
         }
+
+        // TODO:
+        // Loop through ech valid character operator vector until it finds one.
+
         newVector.append(ExpressionElement(inputVector[i]));
 
     } // End for loop

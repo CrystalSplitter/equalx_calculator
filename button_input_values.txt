@@ -1,0 +1,19 @@
+log -> log
+ln -> ln
+e -> e
+pi ->
+
+sin -> sin
+cos -> cos
+tan -> tan
+arcsin -> arcsin
+arccos -> arccos
+arctan -> arctan
+
+! -> !
+nCr -> C
+nPr -> P
+
+sinh -> sinh
+cosh -> cosh
+tanh -> tanh
