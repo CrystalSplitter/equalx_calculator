@@ -4,6 +4,7 @@
 #include <QApplication>
 
 #include "expressionelement.h"
+#include "utilities.h"
 
 class StringCalculator
 {
@@ -22,7 +23,8 @@ public:
     static QVector<ExpressionElement> generateVector(QVector<char> inputVector);
     static QVector<char> convertToVector(QString);
 
-
+private:
+    static bool vectorComparison(QVector<char>, QVector<char>);
 };
 
 #endif // STRINGCALCULATOR_H

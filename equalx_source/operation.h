@@ -6,11 +6,13 @@ namespace Operation
     enum Enum
     {
         none = 'n',
-        add = 'a',
-        sub = 's',
-        mult = 'm',
-        div = 'd',
-        powa = 'p'
+        add = '+',
+        sub = '-',
+        mult = '*',
+        div = '/',
+        powa = '^',
+        log = 'o',
+        ln = 'l',
     };
 }
 #endif // OPERATION_H

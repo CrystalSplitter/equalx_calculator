@@ -2,7 +2,7 @@
 #define EXPRESSIONELEMENT_H
 
 #include <QApplication>
-
+#include "utilities.h"
 #include "operation.h"
 
 class ExpressionElement
@@ -22,6 +22,7 @@ class ExpressionElement
 
     private:
         void initA(char);
+        bool setOperation(QString);
 };
 
 #endif // EXPRESSIONELEMET_H

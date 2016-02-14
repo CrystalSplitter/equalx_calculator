@@ -31,7 +31,6 @@ void StringCalculator::setup()
  */
 double StringCalculator::calculateCharVector(QVector<char> v)
 {
-
     QVector<ExpressionElement> expressionList = generateVector(v);
     ExpressionElement result = calculateList(expressionList);
     return result.value;
@@ -63,10 +62,13 @@ ExpressionElement StringCalculator::calculateList(QVector<ExpressionElement> ele
     if(!elements[0].isNumber)
         newVector.insert(0, ExpressionElement(0.0));
 
+    Utilities::betterVectorPrint(newVector.data());
+
     if(newVector.size() == 2)
     {
         // SYNTAX ERROR: It's impossible to have an ExpressionElement vector
         // of size 2
+
         throw 100;
     }
 
@@ -90,7 +92,6 @@ ExpressionElement StringCalculator::calculateList(QVector<ExpressionElement> ele
 
         while(opCount > 0)
         {
-
             int i = 0; // Iterator for each operation
             while(i < newVector.size()-2)
             {
@@ -140,8 +141,12 @@ QVector<ExpressionElement> StringCalculator::generateVector(QVector<char> inputV
     int subExpressionStartingIndex = -1;
 
     bool grabbingNumber = false;
-    int numberStartingIndex = -1; // Index of start of each number.
+    int numberStartingIndex = -1; // Index of the start of each number.
     int numberEndingIndex = -1; // Index where the last number ended off on.
+
+    bool grabbingOperation = false;
+    int operationStartingIndex = -1; // Index of the start of each operation.
+    int operationEndingIndex = -1; // Index of where the operation ends.
 
     for(int i = 0; i < inputVector.size(); i++)
     {
@@ -255,7 +260,20 @@ QVector<ExpressionElement> StringCalculator::generateVector(QVector<char> inputV
         }
 
         // TODO:
-        // Loop through ech valid character operator vector until it finds one.
+        // Loop through each valid character operator vector until it finds one.
+
+        if(inputVector[i] == '[')
+        {
+            grabbingOperation = true;
+            operationStartingIndex = i+1;
+            continue;
+        }
+        else if(inputVector[i] == ']')
+        {
+            grabbingOperation = false;
+            operationEndingIndex = i;
+            continue;
+        }
 
         newVector.append(ExpressionElement(inputVector[i]));
 
@@ -264,10 +282,11 @@ QVector<ExpressionElement> StringCalculator::generateVector(QVector<char> inputV
 
     // If even after the large loop, the new vector has size 0
     // Append a 0 to the end.
-    if(newVector.size() <= 0)
+    if(newVector.size() == 0)
     {
         newVector.append(ExpressionElement(0.0));
     }
+
 
     return newVector;
 }
@@ -275,21 +294,6 @@ QVector<ExpressionElement> StringCalculator::generateVector(QVector<char> inputV
 // ============================================================================
 // UTILITIES
 // ============================================================================
-
-/*
- * convertToVector:
- *
- * Converts a QString to a char QVector.
- */
-QVector<char> StringCalculator::convertToVector(QString s)
-{
-    QVector<char> newVector = QVector<char>(s.length());
-    for(int i = 0; i < s.length(); i++)
-    {
-        newVector[i] = s.at(i).toLatin1();
-    }
-    return newVector;
-}
 
 /*
  * subExpressionSolver

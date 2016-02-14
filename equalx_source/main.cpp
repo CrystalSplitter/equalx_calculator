@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     try
     {
         StringCalculator::setup();
-        double value = StringCalculator::calculateCharVector(StringCalculator::convertToVector("77(("));
+        double value = StringCalculator::calculateCharVector(Utilities::convertToVector("77*(-2)"));
         qDebug() << value << '\n';
     }
     catch (int e)

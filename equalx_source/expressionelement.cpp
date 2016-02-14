@@ -5,9 +5,13 @@
 
 #include "expressionelement.h"
 
+static std::map<QVector<char>, Operation::Enum> OPERATION_MAP;
+static QVector<QString> POSSIBLE_OPS = QVector<QString>();
 
+// Default constructor
 ExpressionElement::ExpressionElement() : ExpressionElement::ExpressionElement(0.0) {}
 
+// Double constructor
 ExpressionElement::ExpressionElement(double val)
 {
     this->isNumber = true;
@@ -15,6 +19,8 @@ ExpressionElement::ExpressionElement(double val)
     this->value = val;
 }
 
+// Single character initiator
+// May be removed eventually
 ExpressionElement::ExpressionElement(char c)
 {
     initA(c);
@@ -22,7 +28,20 @@ ExpressionElement::ExpressionElement(char c)
 
 ExpressionElement::ExpressionElement(QVector<char> v)
 {
-    // Assuming we did the numbe collection correctly,
+
+    // Before we check for numbers, make sure we aren't in a special operation.
+    for(int i = 0; i < POSSIBLE_OPS.size(); i++)
+    {
+        QVector<char> op_vector = Utilities::convertToVector(POSSIBLE_OPS[i]);
+        if(Utilities::vectorComparison(op_vector, v))
+        {
+            this->isNumber = false;
+            setOperation(POSSIBLE_OPS[i]);
+            return;
+        }
+    }
+
+    // Assuming we did the number collection correctly,
     // this is a number type ExpressionElement
     this->isNumber = true;
 
@@ -73,7 +92,7 @@ ExpressionElement::ExpressionElement(QVector<char> v)
 
 void ExpressionElement::initA(char c)
 {
-    const bool numberCheck = isdigit(c);
+    const bool numberCheck = isdigit;
 
     if(numberCheck)
     {
@@ -85,28 +104,9 @@ void ExpressionElement::initA(char c)
     else
     {
         this->isNumber = false;
-        switch(c)
+        if(!setOperation(QString(c)))
         {
-            case '+':
-                this->op = Operation::add;
-                break;
-            case '-':
-                this->op = Operation::sub;
-                break;
-            case '*':
-                this->op = Operation::mult;
-                break;
-            case '/':
-                this->op = Operation::div;
-                break;
-            case '^':
-                this->op = Operation::powa;
-                break;
-            default:
-                this->op = Operation::none;
-                // ERROR: Not a number nor a valid operator
-                throw 200;
-                break;
+            throw 200;
         }
     }
 }
@@ -165,4 +165,45 @@ double ExpressionElement::calc(ExpressionElement before, ExpressionElement after
     }
 
     return value;
+}
+
+/*
+ * setOperation
+ *
+ * Sets the operation based on an inputted QString
+ */
+bool ExpressionElement::setOperation (QString s)
+{
+    /*
+    switch(s)
+    {
+        case QString("+"):
+            this->op = Operation::add;
+            return true;
+        case QString("-"):
+            this->op = Operation::sub;
+            return true;
+        case QString("*"):
+            this->op = Operation::mult;
+            return true;
+        case QString("/"):
+            this->op = Operation::div;
+            return true;
+        case QString("^"):
+            this->op = Operation::powa;
+            return true;
+        case QString("log"):
+            this->op = Operation::log;
+            return true;
+        case QString("ln"):
+            this->op = Operation::ln;
+            return true;
+        default:
+            this->op = Operation::none;
+            // ERROR: Not a number nor a valid operator
+            return false;
+            break;
+    }
+    */
+    return false;
 }
