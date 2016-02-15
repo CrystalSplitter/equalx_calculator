@@ -9,19 +9,16 @@ class ExpressionElement
 {
     public:
         bool isNumber = true;
-        Operation::Enum op = Operation::none;
+        QString op = "None";
         double value = 0;
 
     public:
         ExpressionElement();
+        ExpressionElement(QString);
         ExpressionElement(double);
-        ExpressionElement(char);
-        ExpressionElement(QVector<char>);
         QString toString();
-        double calc(ExpressionElement, ExpressionElement);
-
+        ExpressionElement calc(ExpressionElement, ExpressionElement);
     private:
-        void initA(char);
         bool setOperation(QString);
 };
 

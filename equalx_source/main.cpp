@@ -2,7 +2,7 @@
 #include <QDebug>
 
 #include "mainwindow.h"
-#include "stringcalculator.h"
+#include "expressionelement.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,9 +12,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        StringCalculator::setup();
-        double value = StringCalculator::calculateCharVector(Utilities::convertToVector("77*(-2)"));
-        qDebug() << value << '\n';
+        qDebug() << ExpressionElement("[Hello World!]").toString();
     }
     catch (int e)
     {

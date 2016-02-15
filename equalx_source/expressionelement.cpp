@@ -19,95 +19,16 @@ ExpressionElement::ExpressionElement(double val)
     this->value = val;
 }
 
-// Single character initiator
-// May be removed eventually
-ExpressionElement::ExpressionElement(char c)
+ExpressionElement::ExpressionElement(QString s)
 {
-    initA(c);
-}
-
-ExpressionElement::ExpressionElement(QVector<char> v)
-{
-
-    // Before we check for numbers, make sure we aren't in a special operation.
-    for(int i = 0; i < POSSIBLE_OPS.size(); i++)
+    if(s.at(0) == QChar('[') && s.at(s.length()-1) == QChar(']'))
     {
-        QVector<char> op_vector = Utilities::convertToVector(POSSIBLE_OPS[i]);
-        if(Utilities::vectorComparison(op_vector, v))
-        {
-            this->isNumber = false;
-            setOperation(POSSIBLE_OPS[i]);
-            return;
-        }
-    }
-
-    // Assuming we did the number collection correctly,
-    // this is a number type ExpressionElement
-    this->isNumber = true;
-
-    if(v.size() == 1)
-    {
-        initA(v[0]);
-        return;
-    }
-
-    // Running value
-    double val = 0;
-
-    // While it shouldn't be signed,
-    // negative values can be helpful for error checking
-    int decimalPosition = -1;
-
-    // Loop through each element in the char array
-    for(int i = 0; i < v.size(); i++)
-    {
-        // Check for decimal points
-        if(v[i] == '.')
-        {
-            if(decimalPosition >= 0)
-            {
-                // 2 DECIMAL POINTS ERROR
-                continue;
-            }
-            else
-            {
-                decimalPosition = i;
-                continue;
-            }
-        }
-
-        if(decimalPosition < 0)
-        {
-            // Remember to shift by 48
-            val = val * 10 + ((int) v[i]) - 48;
-        }
-        else
-        {
-            double neg10Pow = (double) (10*(1-decimalPosition));
-            val = val + (((int) v[i]) - 48)/neg10Pow;
-        }
-        this->value = val;
-    }
-}
-
-void ExpressionElement::initA(char c)
-{
-    const bool numberCheck = isdigit;
-
-    if(numberCheck)
-    {
-        this->isNumber = true;
-        this->op = Operation::none;
-        // Convert the digit to ascii, then shift it by 48.
-        this->value = ((int) c) - 48;
+        this->isNumber = false;
+        this->op = s.mid(1, s.length()-2);
     }
     else
     {
-        this->isNumber = false;
-        if(!setOperation(QString(c)))
-        {
-            throw 200;
-        }
+        this->isNumber = true;
     }
 }
 
@@ -118,17 +39,18 @@ QString ExpressionElement::toString()
 
     if(this->isNumber == true)
     {
-        s = QString::number(this->value);
+        s = this->value;
     }
     else
     {
-        s = static_cast<char>(this->op);
+        s = this->op;
     }
     return s;
 }
 
-double ExpressionElement::calc(ExpressionElement before, ExpressionElement after)
+ExpressionElement ExpressionElement::calc(ExpressionElement before, ExpressionElement after)
 {
+    /*
     if((this->isNumber) || !(before.isNumber) || !(after.isNumber))
     {
         // SYNTAX ERROR: The expression is either
@@ -163,47 +85,7 @@ double ExpressionElement::calc(ExpressionElement before, ExpressionElement after
             throw 202;
             break;
     }
-
-    return value;
-}
-
-/*
- * setOperation
- *
- * Sets the operation based on an inputted QString
- */
-bool ExpressionElement::setOperation (QString s)
-{
-    /*
-    switch(s)
-    {
-        case QString("+"):
-            this->op = Operation::add;
-            return true;
-        case QString("-"):
-            this->op = Operation::sub;
-            return true;
-        case QString("*"):
-            this->op = Operation::mult;
-            return true;
-        case QString("/"):
-            this->op = Operation::div;
-            return true;
-        case QString("^"):
-            this->op = Operation::powa;
-            return true;
-        case QString("log"):
-            this->op = Operation::log;
-            return true;
-        case QString("ln"):
-            this->op = Operation::ln;
-            return true;
-        default:
-            this->op = Operation::none;
-            // ERROR: Not a number nor a valid operator
-            return false;
-            break;
-    }
     */
-    return false;
+
+    return before;
 }
