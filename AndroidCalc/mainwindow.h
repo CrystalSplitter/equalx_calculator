@@ -71,9 +71,45 @@ private slots:
 
     void on_btnSci_clicked();
 
-    void displayError();
-
     void on_btnBack_clicked();
+
+    void on_btnLog_clicked();
+
+    void on_btnLn_clicked();
+
+    void on_btnE_clicked();
+
+    void on_btnPi_clicked();
+
+    void on_btnFact_clicked();
+
+    void on_btnSin_clicked();
+
+    void on_btnCos_clicked();
+
+    void on_btnTan_clicked();
+
+    void on_btnnCm_clicked();
+
+    void on_btnArcSin_clicked();
+
+    void on_btnArcCos_clicked();
+
+    void on_btnArcTan_clicked();
+
+    void on_btnnPm_clicked();
+
+    void on_btnSinh_clicked();
+
+    void on_btnCosh_clicked();
+
+    void on_btnTanh_clicked();
+
+    void on_btnSciEqual_clicked();
+
+    QString addBrackets(QString symbol);
+
+    void on_btnClear_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -82,6 +118,7 @@ protected:
     QListWidgetItem *equation; //The finalized equation
     QList<QString> items; //How it gets printed pretty much
     double value; //Answer
+    QString blah; //Hidden String
 };
 
 #endif // MAINWINDOW_H

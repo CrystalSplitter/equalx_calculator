@@ -20,7 +20,11 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0" colspan="2">
-     <widget class="QListWidget" name="listDisplay"/>
+     <widget class="QListWidget" name="listDisplay">
+      <property name="lineWidth">
+       <number>2</number>
+      </property>
+     </widget>
     </item>
     <item row="1" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
@@ -180,6 +184,13 @@
          <widget class="QPushButton" name="btnSci">
           <property name="text">
            <string>More</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="btnClear">
+          <property name="text">
+           <string>Clear</string>
           </property>
          </widget>
         </item>

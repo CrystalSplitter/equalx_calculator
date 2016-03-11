@@ -20,18 +20,21 @@ void MainWindow::on_btnOne_clicked()
 {
     text->setText(text->text() + "1");
     ui->listDisplay->addItem(text);
+    blah.append("1");
 }
 
 void MainWindow::on_btnTwo_clicked()
 {
     text->setText(text->text() + "2");
     ui->listDisplay->addItem(text);
+    blah.append("2");
 }
 
 void MainWindow::on_btnThree_clicked()
 {
     text->setText(text->text() + "3");
     ui->listDisplay->addItem(text);
+    blah.append("3");
 }
 
 
@@ -39,6 +42,7 @@ void MainWindow::on_btnFour_clicked()
 {
     text->setText(text->text() + "4");
     ui->listDisplay->addItem(text);
+    blah.append("4");
 }
 
 
@@ -46,6 +50,7 @@ void MainWindow::on_btnFive_clicked()
 {
     text->setText(text->text() + "5");
     ui->listDisplay->addItem(text);
+    blah.append("5");
 }
 
 
@@ -53,6 +58,7 @@ void MainWindow::on_btnSix_clicked()
 {
     text->setText(text->text() + "6");
     ui->listDisplay->addItem(text);
+    blah.append("6");
 }
 
 
@@ -60,6 +66,7 @@ void MainWindow::on_btnSeven_clicked()
 {
     text->setText(text->text() + "7");
     ui->listDisplay->addItem(text);
+    blah.append("7");
 }
 
 
@@ -67,6 +74,7 @@ void MainWindow::on_btnEight_clicked()
 {
     text->setText(text->text() + "8");
     ui->listDisplay->addItem(text);
+    blah.append("8");
 }
 
 
@@ -74,70 +82,206 @@ void MainWindow::on_btnNine_clicked()
 {
     text->setText(text->text() + "9");
     ui->listDisplay->addItem(text);
+    blah.append("9");
 }
 
 void MainWindow::on_btnZero_clicked()
 {
     text->setText(text->text() + "0");
     ui->listDisplay->addItem(text);
+    blah.append("0");
 }
 
 void MainWindow::on_btnDot_clicked()
 {
     text->setText(text->text() + ".");
     ui->listDisplay->addItem(text);
+    blah.append(".");
 }
 
 void MainWindow::on_btnLeftPar_clicked()
 {
     text->setText(text->text() + "(");
     ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("("));
 }
 
 void MainWindow::on_btnRightPar_clicked()
 {
     text->setText(text->text() + ")");
     ui->listDisplay->addItem(text);
+     blah.append(MainWindow::addBrackets(")"));
 }
 
 void MainWindow::on_btnPow_clicked()
 {
     text->setText(text->text() + "^");
     ui->listDisplay->addItem(text);
+     blah.append(MainWindow::addBrackets("^"));
 }
 
 void MainWindow::on_btnDivide_clicked()
 {
     text->setText(text->text() + "/");
     ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("/"));
 }
 
 void MainWindow::on_btnMultiply_clicked()
 {
     text->setText(text->text() + "*");
     ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("*"));
 }
 
 void MainWindow::on_btnMinus_clicked()
 {
     text->setText(text->text() + "-");
     ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("-"));
 }
 
 void MainWindow::on_btnPlus_clicked()
 {
     text->setText(text->text() + "+");
     ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("+"));
 }
+
+void MainWindow::on_btnLog_clicked()
+{
+    text->setText(text->text() + "log(");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("log("));
+}
+
+void MainWindow::on_btnLn_clicked()
+{
+    text->setText(text->text() + "ln(");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("ln("));
+}
+
+void MainWindow::on_btnE_clicked()
+{
+    text->setText(text->text() + "e");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("e"));
+}
+
+void MainWindow::on_btnPi_clicked()
+{
+    text->setText(text->text() + "pi");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("pi"));
+}
+
+void MainWindow::on_btnFact_clicked()
+{
+    text->setText(text->text() + "!");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("!"));
+}
+
+void MainWindow::on_btnSin_clicked()
+{
+    text->setText(text->text() + "sin(");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("sin("));
+}
+
+void MainWindow::on_btnCos_clicked()
+{
+    text->setText(text->text() + "cos(");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("cos("));
+}
+
+void MainWindow::on_btnTan_clicked()
+{
+    text->setText(text->text() + "tan(");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("tan("));
+}
+
+void MainWindow::on_btnnCm_clicked()
+{
+    text->setText(text->text() + "C");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("C"));
+}
+
+void MainWindow::on_btnArcSin_clicked()
+{
+    text->setText(text->text() + "arcsin(");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("arcsin("));
+}
+
+void MainWindow::on_btnArcCos_clicked()
+{
+    text->setText(text->text() + "arccos(");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("arccos("));
+}
+
+void MainWindow::on_btnArcTan_clicked()
+{
+    text->setText(text->text() + "arctan(");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("arctan("));
+}
+
+void MainWindow::on_btnnPm_clicked()
+{
+    text->setText(text->text() + "P");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("P"));
+}
+
+void MainWindow::on_btnSinh_clicked()
+{
+    text->setText(text->text() + "sinh(");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("sinh("));
+}
+
+void MainWindow::on_btnCosh_clicked()
+{
+    text->setText(text->text() + "cosh(");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("cosh("));
+}
+
+void MainWindow::on_btnTanh_clicked()
+{
+    text->setText(text->text() + "tanh(");
+    ui->listDisplay->addItem(text);
+    blah.append(MainWindow::addBrackets("tanh("));
+}
+
+void MainWindow::on_btnClear_clicked()
+{
+    text->setText("");
+    ui->listDisplay->addItem(text);
+}
+
 //End of Repetitive Button Code
 
+QString MainWindow::addBrackets(QString symbol)
+{
+   QString newText = symbol;
+   newText.insert(0, "[");
+   newText.insert(symbol.length(), "]");
+   return newText;
+}
 
 void MainWindow::on_btnEval_clicked()
 {
     try
     {
         equation->setText(text->text());
-        QString blah = text->text();
+        QMessageBox::information(this, "New String:", blah);
         value = StringCalculator::calculateCharVector(StringCalculator::convertToVector(blah));
         QString result = QString::number(value);
         items.append(equation->text());
@@ -166,6 +310,10 @@ void MainWindow::on_btnEval_clicked()
             break;
             case 102:
                 QMessageBox::information(this, "Error", "A parenthesis is missing.");
+            break;
+            case 103:
+                QMessageBox::information(this, "Error", "While this may or may not be acceptable in mathematical notation,\n"
+                                                        "this calculator does not support this.");
             break;
             case 200:
                 QMessageBox::information(this, "Error", "Unfortunately, the calculator did not know how to handle this calculation.");
@@ -229,13 +377,14 @@ void MainWindow::on_btnSci_clicked()
     ui->stackedWidget->setCurrentIndex(1);
 }
 
-void MainWindow::displayError()
-{
-
-}
-
 
 void MainWindow::on_btnBack_clicked()
 {
     ui->stackedWidget->setCurrentIndex(0);
 }
+
+void MainWindow::on_btnSciEqual_clicked()
+{
+    ui->btnAnswer->click();
+}
+
