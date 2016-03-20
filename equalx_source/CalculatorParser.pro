@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp\
-    expressionelement.cpp
+    expressionelement.cpp \
+    stringcalculator.cpp
 
 HEADERS  += mainwindow.h \
-    expressionelement.h
+    expressionelement.h \
+    stringcalculator.h
          expressionelement.h
 
 FORMS    += mainwindow.ui
