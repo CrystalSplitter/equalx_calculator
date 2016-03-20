@@ -7,9 +7,9 @@ QVector<QString> StringCalculator::OP_ORDER; // Order of operations
 
 StringCalculator::StringCalculator() {} // No constructor, this is a faux static class
 
-// =======================================================================
-// # Methods                                                             #
-// =======================================================================
+// ==============================================================================================================================================
+// # Methods                                                                                                                                    #
+// ==============================================================================================================================================
 
 // setup()
 //      Sets up the calculator for use, giving initalisation values such as
@@ -19,14 +19,17 @@ void StringCalculator::setup()
     // Setup the operation map for all the expression elements.
     ExpressionElement::setupOperationMap();
 
+    // Put most imminent first.
     OP_ORDER.append("tan");
-    OP_ORDER.append("sin");
     OP_ORDER.append("cos");
+    OP_ORDER.append("sin");
     OP_ORDER.append("^");
+    OP_ORDER.append("pi");
+    OP_ORDER.append("e");
     OP_ORDER.append("*");
     OP_ORDER.append("/");
-    OP_ORDER.append("+");
     OP_ORDER.append("-");
+    OP_ORDER.append("+");
 }
 
 // calculateQStringInput(QString input)
@@ -42,9 +45,9 @@ double StringCalculator::calculateQStringInput(QString input)
     return value;
 }
 
-// -----------------------------------------------------------------------
-// | Functions that are called by the calculator                         |
-// -----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------------------------
+// | Functions that are called by the calculator                                                                                         |
+// ---------------------------------------------------------------------------------------------------------------------------------------
 
 // genExpressionElements(QString input)
 //      The parsing section of the calculator.
@@ -56,20 +59,15 @@ QVector<ExpressionElement> StringCalculator::genExpressionElements(QString input
     // Declare our output vector, starting with size 0.
     QVector<ExpressionElement> expressionVector = QVector<ExpressionElement>(0);
 
-
-    // Declare some variables for dealing with sub-expressions
-    int subExpressionCount = 0;
-    int subExpressionStartingIndex = -1;
-
     // Index that determines where to start when searching for the next operation
     int crawlIndex = 0;
 
     while(crawlIndex < input.length())
     {
 
-        //----------------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------------------------
         // Operation handling
-        //----------------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------------------------
 
         // Check for operations
         if(input.at(crawlIndex) == QChar('['))
@@ -92,13 +90,45 @@ QVector<ExpressionElement> StringCalculator::genExpressionElements(QString input
             }
         }
 
-        //----------------------------------------------------------------
+
+
+
+        //--------------------------------------------------------------------------------------------------------------------------------
         // Subexpression handling
-        //----------------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------------------------
 
         if(input.at(crawlIndex) == QChar('('))
         {
-            int subexpressionEnd = input.indexOf(")", crawlIndex);
+
+            // Turns out the below statement doesn't work.
+            //int subexpressionEnd = input.indexOf(")", crawlIndex);
+            int subexpressionEnd = crawlIndex+1; // A placeholder value for where the subexpression ends.
+            int subexpressionCounter = 1; // Counts how many subexpressions we need to end.
+
+            // Loop through the input, counting up all the open and close parens to find our matching one
+            int parenI = subexpressionEnd;
+            for(; parenI < input.size(); parenI++)
+            {
+                if(input.at(parenI) == QChar('('))
+                {
+                    subexpressionCounter++;
+                }
+                else if(input.at(parenI) == QChar(')'))
+                {
+                    subexpressionCounter--;
+                    if(subexpressionCounter == 0)
+                    {
+                        // Stop incrementing parenI here.
+                        break;
+                    }
+                }
+
+                // We haven't found the close paren yet, increment parenI.
+            }
+
+            // We either found the closing paren or we didn't.
+            // Assign it the value of the loop iterator.
+            subexpressionEnd = parenI;
 
             if(subexpressionEnd < 0)
             {
@@ -119,9 +149,12 @@ QVector<ExpressionElement> StringCalculator::genExpressionElements(QString input
             continue;
         }
 
-        //----------------------------------------------------------------
+
+
+
+        //--------------------------------------------------------------------------------------------------------------------------------
         // Number handling
-        //----------------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------------------------
 
         // Not an operation, so it must be a number.
 
@@ -190,17 +223,23 @@ ExpressionElement StringCalculator::calculateVectorInput(QVector<ExpressionEleme
     // a single expression element.
     QVector<ExpressionElement> modifiableVector = QVector<ExpressionElement>(input);
 
-    // TODO: Instead of addition of 0, use multiply by -1
-    if(!input[0].isNumber)
+    // Put in implied constants at the beginning
+    if(!input.at(0).isNumber)
     {
-        if(input[0].op == "-")
+        if(input.at(0).op == "-" || input.at(0).op == "+") // Allow for negative numbers
         {
             modifiableVector.insert(0, ExpressionElement(0));
         }
-        else
+        else // Allow for stuff like "sin 45"
         {
             modifiableVector.insert(0, ExpressionElement(1));
         }
+    }
+
+    // Put in implied constants at the end.
+    if(!input.at(input.size()-1).isNumber)
+    {
+        modifiableVector.append(ExpressionElement(1));
     }
 
     if(modifiableVector.size() == 2)
@@ -210,6 +249,9 @@ ExpressionElement StringCalculator::calculateVectorInput(QVector<ExpressionEleme
         throw 100;
     }
 
+    //========================================================================================================================================
+    // BEGIN LOOPS
+    //========================================================================================================================================
 
     // Loop through every operation, in the order defined by OP_ORDER
     for(int opIndex = 0; opIndex < OP_ORDER.size(); opIndex++)

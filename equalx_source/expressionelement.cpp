@@ -3,6 +3,7 @@
 // Define the static private variables
 std::map<QString,int> ExpressionElement::opToIntMap;
 bool ExpressionElement::useDeg = true;
+double ExpressionElement::conversion = M_PI/180;
 
 // Default constructor
 ExpressionElement::ExpressionElement() : ExpressionElement::ExpressionElement(0.0) {}
@@ -67,8 +68,12 @@ void ExpressionElement::setupOperationMap()
     ExpressionElement::opToIntMap[QString("-")] = 0x000000002D;
     ExpressionElement::opToIntMap[QString("*")] = 0x000000002A;
     ExpressionElement::opToIntMap[QString("/")] = 0x000000002F;
+    ExpressionElement::opToIntMap[QString("e")] = 0x0000000065;
     ExpressionElement::opToIntMap[QString("^")] = 0x000000005E;
+    ExpressionElement::opToIntMap[QString("pi")] = 0x0000007069;
     ExpressionElement::opToIntMap[QString("sin")] = 0x000073696E;
+    ExpressionElement::opToIntMap[QString("cos")] = 0x0000636F73;
+    ExpressionElement::opToIntMap[QString("tan")] = 0x000074616E;
     // TODO: Make more operations!
 }
 
@@ -154,6 +159,28 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             }
             break;
         }
+        case 0x0000000065:
+            // the natural number e
+            value = M_E;
+
+            if(before.isNumber)
+            {
+                value *= before.value;
+            }
+            else
+            {
+                returnBefore = true;
+            }
+
+            if(after.isNumber)
+            {
+                value *= after.value;
+            }
+            else
+            {
+                returnAfter = true;
+            }
+            break;
         case 0x000000005E:
         {
             // Exponent
@@ -167,18 +194,34 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             }
             break;
         }
+        case 0x0000007069:
+            // Pi
+            value = M_PI;
+
+            if(before.isNumber)
+            {
+                value *= before.value;
+            }
+            else
+            {
+                returnBefore = true;
+            }
+
+            if(after.isNumber)
+            {
+                value *= after.value;
+            }
+            else
+            {
+                returnAfter = true;
+            }
+            break;
         case 0x000073696E:
         {
             // Sine
             if(!after.isNumber)
             {
                 throw 203;
-            }
-
-            double conversion = 1;
-            if(ExpressionElement::useDeg)
-            {
-                conversion = M_PI/180;
             }
 
             if(before.isNumber)
@@ -193,12 +236,53 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
 
             break;
         }
+        case 0x0000636F73:
+        {
+            // Cosine
+            if(!after.isNumber)
+            {
+               throw 203;
+            }
+
+            if(before.isNumber)
+            {
+                value = before.value * cos(after.value*conversion);
+            }
+            else
+            {
+                value = cos(after.value*conversion);
+                returnBefore = true;
+            }
+
+            break;
+        }
+        case 0x000074616E:
+        {
+            // Tangent
+            if(!after.isNumber)
+            {
+               throw 203;
+            }
+
+            if(before.isNumber)
+            {
+                value = before.value * tan(after.value*conversion);
+            }
+            else
+            {
+                value = cos(after.value*conversion);
+                returnBefore = true;
+            }
+
+            break;
+        }
         default:
-            // ERROR: Not a number nor a valid operator
+            // INTERNAL ERROR: Not a number nor a valid operator
             throw 202;
             break;
     }
 
+    // Return the expression element before this one?
     if(returnBefore)
     {
         outputVector.append(before);
@@ -208,6 +292,7 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
     ExpressionElement numberElement = ExpressionElement(value);
     outputVector.append(numberElement);
 
+    // Return the expression element after this one?
     if(returnAfter)
     {
         outputVector.append(after);
@@ -219,4 +304,12 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
 void ExpressionElement::useDegrees(bool y)
 {
     ExpressionElement::useDeg = y;
+    if(y)
+    {
+        conversion = M_PI/180;
+    }
+    else
+    {
+        conversion = 1;
+    }
 }

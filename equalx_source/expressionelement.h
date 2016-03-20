@@ -14,6 +14,7 @@ class ExpressionElement
     private:
         static std::map<QString,int> opToIntMap;
         static bool useDeg;
+        static double conversion;
 
     public:
         ExpressionElement();
@@ -25,7 +26,6 @@ class ExpressionElement
         static void useDegrees(bool);
     private:
         bool setOperation(QString);
-
 
 };
 
