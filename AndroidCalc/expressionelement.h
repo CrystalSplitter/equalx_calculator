@@ -1,27 +1,32 @@
 #ifndef EXPRESSIONELEMENT_H
 #define EXPRESSIONELEMENT_H
 
-#include <QApplication>
-
-#include "operation.h"
+#include "QApplication"
+#include <QDebug>
+#include <math.h>
 
 class ExpressionElement
 {
     public:
         bool isNumber = true;
-        Operation::Enum op = Operation::none;
+        QString op = "None";
         double value = 0;
+    private:
+        static std::map<QString,int> opToIntMap;
+        static bool useDeg;
+        static double conversion;
 
     public:
         ExpressionElement();
+        ExpressionElement(QString);
         ExpressionElement(double);
-        ExpressionElement(char);
-        ExpressionElement(QVector<char>);
-        QString toString();
-        double calc(ExpressionElement, ExpressionElement);
-
+        QString toString() const;
+        QVector<ExpressionElement> calc(ExpressionElement, ExpressionElement);
+        static void setupOperationMap();
+        static void useDegrees(bool);
     private:
-        void initA(char);
+        bool setOperation(QString);
+
 };
 
 #endif // EXPRESSIONELEMET_H

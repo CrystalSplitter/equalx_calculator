@@ -2,22 +2,28 @@
 #define STRINGCALCULATOR_H
 
 #include <QApplication>
+#include <QDebug>
+#include <math.h>
 
 #include "expressionelement.h"
 
 class StringCalculator
 {
+    // Private fields
+private:
+    static QVector<QString> OP_ORDER;
 
-public:
-    static const bool DEBUG = false;
-
+    // Public methods
 public:
     static void setup();
-    static int subMain();
-    static double calculateCharVector(QVector<char>);
-    static ExpressionElement calculateList(QVector<ExpressionElement>);
-    static QVector<ExpressionElement> generateVector(QVector<char> inputVector);
-    static QVector<char> convertToVector(QString);
+    static double calculateQStringInput(QString input);
+
+    // Private methods
+private:
+    StringCalculator(); // Make the instructor impossible to use.
+    static ExpressionElement calculateVectorInput(QVector<ExpressionElement> input);
+    static QVector<ExpressionElement> genExpressionElements(QString input);
+
 };
 
 #endif // STRINGCALCULATOR_H

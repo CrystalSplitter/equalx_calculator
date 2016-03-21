@@ -5,6 +5,8 @@
 #include <QListWidgetItem>
 #include <QMessageBox>
 #include <QRegExp>
+#include <QMenu>
+#include <QAction>
 #include "expressionelement.h"
 #include "stringcalculator.h"
 namespace Ui {
@@ -107,9 +109,11 @@ private slots:
 
     void on_btnSciEqual_clicked();
 
-    QString addBrackets(QString symbol);
+    QString addBrackets(QString symbol, bool special);
 
     void on_btnClear_clicked();
+
+    void on_btnDegAndRad_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -118,7 +122,8 @@ protected:
     QListWidgetItem *equation; //The finalized equation
     QList<QString> items; //How it gets printed pretty much
     double value; //Answer
-    QString blah; //Hidden String
+    QString parseableString; //blah
+    bool units = false; //False = Radians, Degrees = True
 };
 
 #endif // MAINWINDOW_H
