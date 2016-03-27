@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     text->setText("");
     equation = new QListWidgetItem;
     StringCalculator::setup();
+   // parseableString = "1[+]1[-][sin](";
 }
 
 MainWindow::~MainWindow()
@@ -264,6 +265,7 @@ void MainWindow::on_btnTanh_clicked()
 void MainWindow::on_btnClear_clicked()
 {
     text->setText("");
+    parseableString.clear();
     ui->listDisplay->addItem(text);
 }
 
@@ -292,70 +294,77 @@ QString MainWindow::addBrackets(QString symbol, bool special)
    if (!special)
    {
    newText.insert(0, "[");
-   newText.insert(symbol.length() + 1, "]");
+   newText.insert(newText.length() + 1, "]");
    return newText;
    }
    else
    {
        newText.insert(0, "([");
-       newText.insert(symbol.length() + 1, "])");
+       newText.insert(newText.length() + 1, "])");
        return newText;
    }
 }
 
 void MainWindow::on_btnEval_clicked()
 {
-    try
+    if (!text->text().isEmpty())
     {
-        equation->setText(text->text());
-        QMessageBox::information(this, "New String:", parseableString);
-        value = StringCalculator::calculateQStringInput(parseableString);
-        QString result = QString::number(value);
-        items.append(equation->text());
-        items.append("=" + result);
-        ui->listDisplay->addItems(items);
-        /*Since I was unable to get the loop to work to make sure it didn't print multiple times,
-          I had to clear the list right after it prints. It doesn't work when just equation is
-          printed, but it works with the list for whatever reason.
-          The good news is that the QListWidget should theoretically still hold all of the values.*/
-        items.clear();
-        text->setText("");
-        ui->listDisplay->setCurrentRow(ui->listDisplay->currentRow() + 2);
-        ui->listDisplay->takeItem(ui->listDisplay->row(text));
-        ui->listDisplay->item(ui->listDisplay->count() - 1)->setSelected(true);
-        ui->listDisplay->setFocus();
-        parseableString.clear();
-    }
-    catch(int e)
-    {
-        switch (e)
+        try
         {
-            case 100:
-                QMessageBox::information(this, "Error", "Syntax Error");
-            break;
-            case 101:
-                QMessageBox::information(this, "Error", "The input ended in an operation.");
-            break;
-            case 102:
-                QMessageBox::information(this, "Error", "A parenthesis is missing.");
-            break;
-            case 103:
-                QMessageBox::information(this, "Error", "While this may or may not be acceptable in mathematical notation,\n"
-                                                        "this calculator does not support this.");
-            break;
-            case 200:
-                QMessageBox::information(this, "Error", "Unfortunately, the calculator did not know how to handle this calculation.");
-            break;
-            case 201:
-                QMessageBox::information(this, "Error", "You inputed something the calculator could not expect. Well done!");
-            break;
-            default:
-                QMessageBox::information(this, "Wow", "Look, we have an error for everything we could resonably expect and even unexpect.\n"
-                                                      "You managed to do something beyond the unexpected. You're one of those people who thinks"
-                                                      "that nothing fits within a binary. We expected a 0 or a 1, and you gave us a 2.\n"
-                                                      "Just props to you man.");
-            break;
+            equation->setText(text->text());
+            QMessageBox::information(this, "New String:", parseableString);
+            value = StringCalculator::calculateQStringInput(parseableString);
+            QString result = QString::number(value);
+            items.append(equation->text());
+            items.append("=" + result);
+            ui->listDisplay->addItems(items);
+            /*Since I was unable to get the loop to work to make sure it didn't print multiple times,
+              I had to clear the list right after it prints. It doesn't work when just equation is
+              printed, but it works with the list for whatever reason.
+              The good news is that the QListWidget should theoretically still hold all of the values.*/
+            items.clear();
+            text->setText("");
+            ui->listDisplay->setCurrentRow(ui->listDisplay->currentRow() + 2);
+            ui->listDisplay->takeItem(ui->listDisplay->row(text));
+            ui->listDisplay->item(ui->listDisplay->count() - 1)->setSelected(true);
+            ui->listDisplay->setFocus();
+            parseableString.clear();
         }
+        catch(int e)
+        {
+            switch (e)
+            {
+                case 100:
+                    QMessageBox::information(this, "Error", "Syntax Error");
+                break;
+                case 101:
+                    QMessageBox::information(this, "Error", "The input ended in an operation.");
+                break;
+                case 102:
+                    QMessageBox::information(this, "Error", "A parenthesis is missing.");
+                break;
+                case 103:
+                    QMessageBox::information(this, "Error", "While this may or may not be acceptable in mathematical notation,\n"
+                                                            "this calculator does not support this.");
+                break;
+                case 200:
+                    QMessageBox::information(this, "Error", "Unfortunately, the calculator did not know how to handle this calculation.");
+                break;
+                case 201:
+                    QMessageBox::information(this, "Error", "You inputed something the calculator could not expect. Well done!");
+                break;
+                default:
+                    QMessageBox::information(this, "Wow", "Look, we have an error for everything we could resonably expect and even unexpect.\n"
+                                                          "You managed to do something beyond the unexpected. You're one of those people who thinks"
+                                                          "that nothing fits within a binary. We expected a 0 or a 1, and you gave us a 2.\n"
+                                                          "Just props to you man.");
+                break;
+            }
+        }
+    }
+    else
+    {
+        QMessageBox::information(this, "Nothing to Do", "There is no text detected on the screen.");
     }
 }
 
@@ -375,15 +384,17 @@ void MainWindow::on_btnAnswer_clicked()
 void MainWindow::on_btnDelete_clicked()
 {
     QString newText = text->text();
-    newText.chop(1);
-    text->setText(newText);
-    ui->listDisplay->addItem(text);
+    QString ref = newText.right(newText.length() - 3);
+    QMessageBox::information(this, "ref", ref);
+    if (!text->text().isEmpty() &&  !parseableString.isEmpty())
+    {
+
+    if (!parseableString.isEmpty() && newText.at(newText.length() -1) != 'e' && ref != "pi" && newText.at(newText.length() -1) != '!' && newText.at(newText.length() -1) != 'C' && newText.at(newText.length() -1) != 'P')
+    {
+    QMessageBox::information(this, "New String:", parseableString);
+
     int firstMark = -1;
-        if (parseableString.at(parseableString.length() - 1).isDigit())
-        {
-            parseableString.chop(1);
-        }
-        else
+        if (parseableString.at(parseableString.length() - 1) == ']')
         {
             int chopCount = 0;
             for(int i = parseableString.length() - 1; i >= 0; i--)
@@ -404,14 +415,59 @@ void MainWindow::on_btnDelete_clicked()
                 }
 
             }
+            QStringRef removeText = newText.rightRef(chopCount - 3);
+            QChar symbolCheck = removeText.toString().at(removeText.toString().length() - 1);
             parseableString.chop(chopCount);
-       }
+            QMessageBox::information(this, "Text to be removed", removeText.toString());
+            if (symbolCheck.isSymbol() || symbolCheck.isPunct())
+            {
+                QMessageBox::warning(this, "Triggered", "Contains Symbol");
+                newText.chop(1);
+                text->setText(newText);
+                ui->listDisplay->addItem(text);
+            }
+            else
+            {
+                newText.chop(removeText.length());
+                text->setText(newText);
+                ui->listDisplay->addItem(text);
+            }
+
+        }
+        else
+        {
+            parseableString.chop(1);
+            newText.chop(1);
+            text->setText(newText);
+            ui->listDisplay->addItem(text);
+        }
+    }
+
+    else if (newText.at(newText.length() - 1) == 'e' || newText.at(newText.length() - 1) == '!' || newText.at(newText.length() - 1) == 'C' || newText.at(newText.length() - 1) == 'P')
+    {
+        parseableString.chop(6);
+        newText.chop(1);
+        text->setText(newText);
+        ui->listDisplay->addItem(text);
+    }
+    else if (ref == "pi")
+    {
+        parseableString.chop(7);
+        newText.chop(2);
+        text->setText(newText);
+        ui->listDisplay->addItem(text);
+    }
+    }
+    else if (newText.isEmpty() && !parseableString.isEmpty())
+    {
+        parseableString.clear();
+    }
+
 }
 
 //Makes the history finite
 void MainWindow::on_listDisplay_currentRowChanged(int currentRow)
 {
-    //TODO: Check to make sure currentRow works
     if (currentRow > 50)
     {
         for (int i = 0; i <= 10; i++)
@@ -425,7 +481,10 @@ void MainWindow::on_listDisplay_doubleClicked(const QModelIndex &index)
 {
     QMessageBox::information(this, "It worked.", "Yay! :D");
     QString history = ui->listDisplay->item(index.row())->text();
-    history.remove(0,0);
+    if (history.contains("="))
+    {
+        history.remove(0, 1);
+    }
     text->setText(text->text() + history);
     ui->listDisplay->addItem(text);
 }
@@ -443,6 +502,6 @@ void MainWindow::on_btnBack_clicked()
 
 void MainWindow::on_btnSciEqual_clicked()
 {
-    ui->btnAnswer->click();
+    ui->btnEval->click();
 }
 
