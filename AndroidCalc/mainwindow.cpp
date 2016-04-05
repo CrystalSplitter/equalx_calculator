@@ -312,8 +312,10 @@ void MainWindow::on_btnEval_clicked()
         try
         {
             equation->setText(text->text());
+            //Debug Message to show what's going into the "engine"
             QMessageBox::information(this, "New String:", parseableString);
             value = StringCalculator::calculateQStringInput(parseableString);
+            //Int to QString Conversion
             QString result = QString::number(value);
             items.append(equation->text());
             items.append("=" + result);
@@ -322,6 +324,8 @@ void MainWindow::on_btnEval_clicked()
               I had to clear the list right after it prints. It doesn't work when just equation is
               printed, but it works with the list for whatever reason.
               The good news is that the QListWidget should theoretically still hold all of the values.*/
+
+            //Reset the calculator, and set the new line on the calculator
             items.clear();
             text->setText("");
             ui->listDisplay->setCurrentRow(ui->listDisplay->currentRow() + 2);
