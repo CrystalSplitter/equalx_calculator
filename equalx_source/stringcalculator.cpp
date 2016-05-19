@@ -7,9 +7,9 @@ QVector<QString> StringCalculator::OP_ORDER; // Order of operations
 
 StringCalculator::StringCalculator() {} // No constructor, this is a faux static class
 
-// ==============================================================================================================================================
-// # Methods                                                                                                                                    #
-// ==============================================================================================================================================
+// ========================================================================================================================================
+// # Methods                                                                                                                              #
+// ========================================================================================================================================
 
 // setup()
 //      Sets up the calculator for use, giving initalisation values such as
@@ -30,6 +30,14 @@ void StringCalculator::setup()
     OP_ORDER.append("/");
     OP_ORDER.append("-");
     OP_ORDER.append("+");
+}
+
+// useDegrees(bool y)
+//      Allows the user to set whether or not we should use degrees.
+//      Only really modifies a static variable inside the ExpressionElement class
+void StringCalculator::useDegrees(bool y)
+{
+    ExpressionElement::useDegrees(y);
 }
 
 // calculateQStringInput(QString input)
@@ -230,7 +238,12 @@ ExpressionElement StringCalculator::calculateVectorInput(QVector<ExpressionEleme
         {
             modifiableVector.insert(0, ExpressionElement(0));
         }
-        else // Allow for stuff like "sin 45"
+        else if(input.at(0).op == "*" || input.at(0).op == "/" || input.at(0).op == "^") // Complain when we begin with these
+        {
+            // SYNTAX ERROR
+            throw 101;
+        }
+        else // Allow for stuff like "sin(45)" and "log(100)"
         {
             modifiableVector.insert(0, ExpressionElement(1));
         }
@@ -239,7 +252,17 @@ ExpressionElement StringCalculator::calculateVectorInput(QVector<ExpressionEleme
     // Put in implied constants at the end.
     if(!input.at(input.size()-1).isNumber)
     {
-        modifiableVector.append(ExpressionElement(1));
+        if(input.at(input.size()-1).op == "pi"
+                || input.at(input.size()-1).op == "e"
+                || input.at(input.size()-1).op == "!")
+        {
+            modifiableVector.append(ExpressionElement(1));
+        }
+        else
+        {
+            // SYNTAX ERROR
+            throw 102;
+        }
     }
 
     if(modifiableVector.size() == 2)

@@ -13,11 +13,11 @@ int main(int argc, char *argv[])
     //MainWindow w;
     //w.show();
 
-    /*
+    
     try
     {
         StringCalculator::setup();
-        ExpressionElement::useDegrees(true);
+        StringCalculator::useDegrees(true);
         double value = 0;
 
 
@@ -75,6 +75,18 @@ int main(int argc, char *argv[])
         qDebug() << "Test26: " << (abs(M_PI*M_E-value) < 0.0000001);
         value = StringCalculator::calculateQStringInput(QString("([e])[^]([pi])"));
         qDebug() << "Test27: " << (abs(23.14069263-value) < 0.0000001);
+        value = StringCalculator::calculateQStringInput(QString("([e])[^]([pi])"));
+        qDebug() << "Test27: " << (abs(23.14069263-value) < 0.0000001);
+        value = StringCalculator::calculateQStringInput(QString("[+]7"));
+        qDebug() << "Test28: " << (abs(7-value) < 0.0000001);
+
+        StringCalculator::useDegrees(false);
+        value = StringCalculator::calculateQStringInput(QString("[cos]([pi])"));
+        qDebug() << "Test29: " << (abs(-1-value) < 0.0000001);
+        value = StringCalculator::calculateQStringInput(QString("[sin](3[*][pi][/]2)"));
+        qDebug() << "Test30: " << (abs(-1-value) < 0.0000001);
+        value = StringCalculator::calculateQStringInput(QString("[tan]([pi][/]4)"));
+        qDebug() << "Test31: " << (abs(1-value) < 0.0000001);
 
         // ExpressionElement tests
 
@@ -90,7 +102,6 @@ int main(int argc, char *argv[])
     {
         qDebug() << "There was an error: Error Num" << e << '\n';
     }
-    */
     return 0;
     //return a.exec();
 }
