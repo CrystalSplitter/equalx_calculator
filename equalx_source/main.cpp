@@ -20,7 +20,6 @@ int main(int argc, char *argv[])
         StringCalculator::useDegrees(true);
         double value = 0;
 
-
         value = StringCalculator::calculateQStringInput(QString("90[+]10"));
         qDebug() << "Test1: " << (abs(100-value) < 0.0000001);
         value = StringCalculator::calculateQStringInput(QString("10[+]90"));
@@ -75,8 +74,6 @@ int main(int argc, char *argv[])
         qDebug() << "Test26: " << (abs(M_PI*M_E-value) < 0.0000001);
         value = StringCalculator::calculateQStringInput(QString("([e])[^]([pi])"));
         qDebug() << "Test27: " << (abs(23.14069263-value) < 0.0000001);
-        value = StringCalculator::calculateQStringInput(QString("([e])[^]([pi])"));
-        qDebug() << "Test27: " << (abs(23.14069263-value) < 0.0000001);
         value = StringCalculator::calculateQStringInput(QString("[+]7"));
         qDebug() << "Test28: " << (abs(7-value) < 0.0000001);
 
@@ -87,6 +84,45 @@ int main(int argc, char *argv[])
         qDebug() << "Test30: " << (abs(-1-value) < 0.0000001);
         value = StringCalculator::calculateQStringInput(QString("[tan]([pi][/]4)"));
         qDebug() << "Test31: " << (abs(1-value) < 0.0000001);
+
+        StringCalculator::useDegrees(true);
+        value = StringCalculator::calculateQStringInput(QString("7[!]"));
+        qDebug() << "Test32: " << (abs(5040-value) < 0.0000001);
+        value = StringCalculator::calculateQStringInput(QString("6[!]"));
+        qDebug() << "Test33: " << (abs(720-value) < 0.0000001);
+        try {value = StringCalculator::calculateQStringInput(QString("[e][!]")); qDebug() << "Test34: " << false;}
+        catch (int e) {qDebug() << "Test34: " << (e == 203);}
+        try {value = StringCalculator::calculateQStringInput(QString("([-]1)[!]")); qDebug() << "Test34: " << false;}
+        catch (int e) {qDebug() << "Test35: " << (e == 203);}
+        value = StringCalculator::calculateQStringInput(QString("[-](1[!])"));
+        qDebug() << "Test36: " << (abs(-1-value) == 0);
+        value = StringCalculator::calculateQStringInput(QString("(0[!])"));
+        qDebug() << "Test37: " << (abs(1-value) == 0);
+        value = StringCalculator::calculateQStringInput(QString("5[P]3"));
+        qDebug() << "Test38: " << (abs(60-value) == 0);
+        value = StringCalculator::calculateQStringInput(QString("10[P]1"));
+        qDebug() << "Test39: " << (abs(10-value) == 0);
+        value = StringCalculator::calculateQStringInput(QString("10[P]10"));
+        qDebug() << "Test40: " << (abs(3628800-value) == 0);
+        value = StringCalculator::calculateQStringInput(QString("7[P]6"));
+        qDebug() << "Test41: " << (abs(5040-value) == 0);
+        value = StringCalculator::calculateQStringInput(QString("7[P]0"));
+        qDebug() << "Test42: " << (abs(1-value) == 0);
+        try {value = StringCalculator::calculateQStringInput(QString("3[P]5")); qDebug() << "Test42: " << false;}
+        catch (int e) {qDebug() << "Test43: " << (e == 203);}
+        value = StringCalculator::calculateQStringInput(QString("7[C]6"));
+        qDebug() << "Test44: " << (abs(7-value) == 0);
+        value = StringCalculator::calculateQStringInput(QString("7[C]1"));
+        qDebug() << "Test45: " << (abs(7-value) == 0);
+        value = StringCalculator::calculateQStringInput(QString("9[C]0"));
+        qDebug() << "Test46: " << (abs(1-value) == 0);
+        value = StringCalculator::calculateQStringInput(QString("9[C]9"));
+        qDebug() << "Test47: " << (abs(1-value) == 0);
+        value = StringCalculator::calculateQStringInput(QString("9[C]5"));
+        qDebug() << "Test48: " << (abs(126-value) == 0);
+        value = StringCalculator::calculateQStringInput(QString("36[C]4"));
+        qDebug() << "Test49: " << (abs(58905-value) == 0);
+        qDebug() << value;
 
         // ExpressionElement tests
 

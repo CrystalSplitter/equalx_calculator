@@ -20,6 +20,9 @@ void StringCalculator::setup()
     ExpressionElement::setupOperationMap();
 
     // Put most imminent first.
+    OP_ORDER.append("C");
+    OP_ORDER.append("P");
+    OP_ORDER.append("!");
     OP_ORDER.append("tan");
     OP_ORDER.append("cos");
     OP_ORDER.append("sin");
@@ -72,7 +75,6 @@ QVector<ExpressionElement> StringCalculator::genExpressionElements(QString input
 
     while(crawlIndex < input.length())
     {
-
         //--------------------------------------------------------------------------------------------------------------------------------
         // Operation handling
         //--------------------------------------------------------------------------------------------------------------------------------
@@ -97,9 +99,6 @@ QVector<ExpressionElement> StringCalculator::genExpressionElements(QString input
                 continue;
             }
         }
-
-
-
 
         //--------------------------------------------------------------------------------------------------------------------------------
         // Subexpression handling

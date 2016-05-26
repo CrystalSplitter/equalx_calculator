@@ -26,6 +26,7 @@ class ExpressionElement
         static void useDegrees(bool);
     private:
         bool setOperation(QString);
+        static double factorial(double);
 
 };
 

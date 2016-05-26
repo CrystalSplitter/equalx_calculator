@@ -74,6 +74,9 @@ void ExpressionElement::setupOperationMap()
     ExpressionElement::opToIntMap[QString("sin")] = 0x000073696E;
     ExpressionElement::opToIntMap[QString("cos")] = 0x0000636F73;
     ExpressionElement::opToIntMap[QString("tan")] = 0x000074616E;
+    ExpressionElement::opToIntMap[QString("!")] = 0x0000000021;
+    ExpressionElement::opToIntMap[QString("P")] = 0x0000000050;
+    ExpressionElement::opToIntMap[QString("C")] = 0x0000000043;
     // TODO: Make more operations!
 }
 
@@ -233,7 +236,6 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
                 value = sin(after.value*conversion);
                 returnBefore = true;
             }
-
             break;
         }
         case 0x0000636F73:
@@ -253,7 +255,6 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
                 value = cos(after.value*conversion);
                 returnBefore = true;
             }
-
             break;
         }
         case 0x000074616E:
@@ -273,9 +274,65 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
                 value = cos(after.value*conversion);
                 returnBefore = true;
             }
-
             break;
         }
+        case 0x0000000021:
+        {
+            // Factorial
+            double multVal = 1; // Multiply this at the end
+
+            if(after.isNumber)
+            {
+                // If there's a number after
+                // the factorial, multiply it to the end
+                multVal = after.value;
+            }
+            else
+            {
+                // If there's an operation instead,
+                // return it with the output.
+                returnAfter = true;
+            }
+
+            if(!before.isNumber)
+            {
+                throw 203;
+            }
+            else
+            {
+                value = (double) ExpressionElement::factorial(before.value);
+            }
+
+            // Multiply by the right number if it exists.
+            value = value * multVal;
+            break;
+        }
+        case 0x0000000050:
+            // Permutations
+            // Make sure that there are integers before and after
+            // the P.
+            if(!after.isNumber || !before.isNumber)
+            {
+                throw 203;
+            }
+
+            value = ExpressionElement::factorial(before.value) / ExpressionElement::factorial(before.value - after.value);
+            break;
+        case 0x0000000043:
+            // Combinations
+            // Make sure that there are integers before and after
+            // the P.
+            if(!after.isNumber || !before.isNumber)
+            {
+                throw 203;
+            }
+
+            // TODO:
+            // Debug statements
+            //qDebug() << "top " <<  ExpressionElement::factorial(before.value);
+            //qDebug() << "bot " << (ExpressionElement::factorial(before.value-after.value)*ExpressionElement::factorial(after.value));
+            value = ExpressionElement::factorial(before.value)/(ExpressionElement::factorial(before.value-after.value)*ExpressionElement::factorial(after.value));
+            break;
         default:
             // INTERNAL ERROR: Not a number nor a valid operator
             throw 202;
@@ -312,4 +369,35 @@ void ExpressionElement::useDegrees(bool y)
     {
         conversion = 1;
     }
+}
+
+// factorial()
+//      Takes a double and makes sure that it is an integer
+//      Returns the output which while is numerically always
+//      an integer, returns it as a double because we always
+//      deal with doubles anyways.
+double ExpressionElement::factorial(double x)
+{
+    // Get integer value of the left number.
+    // We do not use the gamma function.
+    int integerInput = (int) x;
+
+    if((x - integerInput > 0.00000001)
+        || (x < 0))
+    {
+        throw 203;
+    }
+    else if(integerInput == 0)
+    {
+        // By definition, 0! = 1
+        return 1;
+    }
+
+    QVector<int> factorialSaveVector = QVector<int>(x);
+    factorialSaveVector[0] = x;
+
+    for(int i = 1; i < factorialSaveVector.size(); i++) {
+        factorialSaveVector[i] = factorialSaveVector.at(i-1) * (x-i);
+    }
+    return factorialSaveVector.last();
 }
