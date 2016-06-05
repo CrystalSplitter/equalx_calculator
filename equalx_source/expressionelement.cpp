@@ -1,9 +1,9 @@
 #include "expressionelement.h"
 
 // Define the static private variables
-std::map<QString,int> ExpressionElement::opToIntMap;
-bool ExpressionElement::useDeg = true;
-double ExpressionElement::conversion = M_PI/180;
+std::map<QString,int> ExpressionElement::opToIntMap_;
+bool ExpressionElement::useDeg_ = true;
+double ExpressionElement::conversion_ = M_PI/180;
 
 // Default constructor
 ExpressionElement::ExpressionElement() : ExpressionElement::ExpressionElement(0.0) {}
@@ -13,9 +13,9 @@ ExpressionElement::ExpressionElement() : ExpressionElement::ExpressionElement(0.
 //      Sets the value to the argument provided.
 ExpressionElement::ExpressionElement(double val)
 {
-    this->isNumber = true;
-    this->op = QString("None");
-    this->value = val;
+    this->isNumber_ = true;
+    this->op_ = QString("None");
+    this->value_ = val;
 }
 
 // Constructor for a QString
@@ -26,14 +26,14 @@ ExpressionElement::ExpressionElement(QString s)
 {
     if(s.at(0) == QChar('[') && s.at(s.length()-1) == QChar(']'))
     {
-        this->isNumber = false;
-        this->op = s.mid(1, s.length()-2);
+        this->isNumber_ = false;
+        this->op_ = s.mid(1, s.length()-2);
     }
     else
     {
-        this->isNumber = true;
-        this->op = QString("None");
-        this->value = s.toDouble();
+        this->isNumber_ = true;
+        this->op_ = QString("None");
+        this->value_ = s.toDouble();
     }
 }
 
@@ -43,13 +43,13 @@ QString ExpressionElement::toString() const
     // Returning string
     QString s;
 
-    if(this->isNumber == true)
+    if(this->isNumber_ == true)
     {
-        s = QString::number(this->value);
+        s = QString::number(this->value_);
     }
     else
     {
-        s = this->op;
+        s = this->op_;
     }
     return s;
 }
@@ -64,19 +64,19 @@ void ExpressionElement::setupOperationMap()
     // this system allows functions to be 5 characters long:
     //      -Convert the function's ascii chars to hex.
     //      -Put them in the map.
-    ExpressionElement::opToIntMap[QString("+")] = 0x000000002B;
-    ExpressionElement::opToIntMap[QString("-")] = 0x000000002D;
-    ExpressionElement::opToIntMap[QString("*")] = 0x000000002A;
-    ExpressionElement::opToIntMap[QString("/")] = 0x000000002F;
-    ExpressionElement::opToIntMap[QString("e")] = 0x0000000065;
-    ExpressionElement::opToIntMap[QString("^")] = 0x000000005E;
-    ExpressionElement::opToIntMap[QString("pi")] = 0x0000007069;
-    ExpressionElement::opToIntMap[QString("sin")] = 0x000073696E;
-    ExpressionElement::opToIntMap[QString("cos")] = 0x0000636F73;
-    ExpressionElement::opToIntMap[QString("tan")] = 0x000074616E;
-    ExpressionElement::opToIntMap[QString("!")] = 0x0000000021;
-    ExpressionElement::opToIntMap[QString("P")] = 0x0000000050;
-    ExpressionElement::opToIntMap[QString("C")] = 0x0000000043;
+    ExpressionElement::opToIntMap_[QString("+")] = 0x000000002B;
+    ExpressionElement::opToIntMap_[QString("-")] = 0x000000002D;
+    ExpressionElement::opToIntMap_[QString("*")] = 0x000000002A;
+    ExpressionElement::opToIntMap_[QString("/")] = 0x000000002F;
+    ExpressionElement::opToIntMap_[QString("e")] = 0x0000000065;
+    ExpressionElement::opToIntMap_[QString("^")] = 0x000000005E;
+    ExpressionElement::opToIntMap_[QString("pi")] = 0x0000007069;
+    ExpressionElement::opToIntMap_[QString("sin")] = 0x000073696E;
+    ExpressionElement::opToIntMap_[QString("cos")] = 0x0000636F73;
+    ExpressionElement::opToIntMap_[QString("tan")] = 0x000074616E;
+    ExpressionElement::opToIntMap_[QString("!")] = 0x0000000021;
+    ExpressionElement::opToIntMap_[QString("P")] = 0x0000000050;
+    ExpressionElement::opToIntMap_[QString("C")] = 0x0000000043;
     // TODO: Make more operations!
 }
 
@@ -97,14 +97,14 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
     bool returnBefore = false;
     bool returnAfter = false;
 
-    if((this->isNumber))
+    if((this->isNumber_))
     {
         // SYNTAX ERROR: The expression is not an operator
         throw 201;
     }
 
     // Simple operations are + - * / ^ and a few others
-    if(!before.isNumber || !after.isNumber)
+    if(!before.isNumber_ || !after.isNumber_)
     {
         //not surrounded by number elements (such as "+*+")
         validSimpleOp = false;
@@ -114,13 +114,13 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
 
     // Go through each viable operation that we've made so far.
     // If we want to make more operations, add them here!
-    switch(ExpressionElement::opToIntMap[this->op])
+    switch(ExpressionElement::opToIntMap_[this->op_])
     {
         case 0x000000002B:
             // Addition
             if(validSimpleOp)
             {
-                value = before.value + after.value;
+                value = before.value_ + after.value_;
             }
             else
             {
@@ -131,7 +131,7 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             // Subtraction
             if(validSimpleOp)
             {
-                value = before.value - after.value;
+                value = before.value_ - after.value_;
             }
             else
             {
@@ -142,7 +142,7 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             // Multiplication
             if(validSimpleOp)
             {
-                value = before.value * after.value;
+                value = before.value_ * after.value_;
             }
             else
             {
@@ -154,7 +154,7 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             // Division
             if(validSimpleOp)
             {
-                value = before.value / after.value;
+                value = before.value_ / after.value_;
             }
             else
             {
@@ -166,18 +166,18 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             // the natural number e
             value = M_E;
 
-            if(before.isNumber)
+            if(before.isNumber_)
             {
-                value *= before.value;
+                value *= before.value_;
             }
             else
             {
                 returnBefore = true;
             }
 
-            if(after.isNumber)
+            if(after.isNumber_)
             {
-                value *= after.value;
+                value *= after.value_;
             }
             else
             {
@@ -189,7 +189,7 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             // Exponent
             if(validSimpleOp)
             {
-                value = pow(before.value, after.value);
+                value = pow(before.value_, after.value_);
             }
             else
             {
@@ -201,18 +201,18 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             // Pi
             value = M_PI;
 
-            if(before.isNumber)
+            if(before.isNumber_)
             {
-                value *= before.value;
+                value *= before.value_;
             }
             else
             {
                 returnBefore = true;
             }
 
-            if(after.isNumber)
+            if(after.isNumber_)
             {
-                value *= after.value;
+                value *= after.value_;
             }
             else
             {
@@ -222,18 +222,18 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
         case 0x000073696E:
         {
             // Sine
-            if(!after.isNumber)
+            if(!after.isNumber_)
             {
                 throw 203;
             }
 
-            if(before.isNumber)
+            if(before.isNumber_)
             {
-                value = before.value * sin(after.value*conversion);
+                value = before.value_ * sin(after.value_*conversion_);
             }
             else
             {
-                value = sin(after.value*conversion);
+                value = sin(after.value_*conversion_);
                 returnBefore = true;
             }
             break;
@@ -241,18 +241,18 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
         case 0x0000636F73:
         {
             // Cosine
-            if(!after.isNumber)
+            if(!after.isNumber_)
             {
                throw 203;
             }
 
-            if(before.isNumber)
+            if(before.isNumber_)
             {
-                value = before.value * cos(after.value*conversion);
+                value = before.value_ * cos(after.value_*conversion_);
             }
             else
             {
-                value = cos(after.value*conversion);
+                value = cos(after.value_*conversion_);
                 returnBefore = true;
             }
             break;
@@ -260,18 +260,18 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
         case 0x000074616E:
         {
             // Tangent
-            if(!after.isNumber)
+            if(!after.isNumber_)
             {
                throw 203;
             }
 
-            if(before.isNumber)
+            if(before.isNumber_)
             {
-                value = before.value * tan(after.value*conversion);
+                value = before.value_ * tan(after.value_*conversion_);
             }
             else
             {
-                value = cos(after.value*conversion);
+                value = cos(after.value_*conversion_);
                 returnBefore = true;
             }
             break;
@@ -281,11 +281,11 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             // Factorial
             double multVal = 1; // Multiply this at the end
 
-            if(after.isNumber)
+            if(after.isNumber_)
             {
                 // If there's a number after
                 // the factorial, multiply it to the end
-                multVal = after.value;
+                multVal = after.value_;
             }
             else
             {
@@ -294,13 +294,13 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
                 returnAfter = true;
             }
 
-            if(!before.isNumber)
+            if(!before.isNumber_)
             {
                 throw 203;
             }
             else
             {
-                value = (double) ExpressionElement::factorial(before.value);
+                value = (double) ExpressionElement::factorial(before.value_);
             }
 
             // Multiply by the right number if it exists.
@@ -311,18 +311,18 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             // Permutations
             // Make sure that there are integers before and after
             // the P.
-            if(!after.isNumber || !before.isNumber)
+            if(!after.isNumber_ || !before.isNumber_)
             {
                 throw 203;
             }
 
-            value = ExpressionElement::factorial(before.value) / ExpressionElement::factorial(before.value - after.value);
+            value = ExpressionElement::factorial(before.value_) / ExpressionElement::factorial(before.value_ - after.value_);
             break;
         case 0x0000000043:
             // Combinations
             // Make sure that there are integers before and after
             // the P.
-            if(!after.isNumber || !before.isNumber)
+            if(!after.isNumber_ || !before.isNumber_)
             {
                 throw 203;
             }
@@ -331,7 +331,7 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             // Debug statements
             //qDebug() << "top " <<  ExpressionElement::factorial(before.value);
             //qDebug() << "bot " << (ExpressionElement::factorial(before.value-after.value)*ExpressionElement::factorial(after.value));
-            value = ExpressionElement::factorial(before.value)/(ExpressionElement::factorial(before.value-after.value)*ExpressionElement::factorial(after.value));
+            value = ExpressionElement::factorial(before.value_)/(ExpressionElement::factorial(before.value_-after.value_)*ExpressionElement::factorial(after.value_));
             break;
         default:
             // INTERNAL ERROR: Not a number nor a valid operator
@@ -360,14 +360,14 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
 
 void ExpressionElement::useDegrees(bool y)
 {
-    ExpressionElement::useDeg = y;
+    ExpressionElement::useDeg_ = y;
     if(y)
     {
-        conversion = M_PI/180;
+        conversion_ = M_PI/180;
     }
     else
     {
-        conversion = 1;
+        conversion_ = 1;
     }
 }
 
@@ -382,9 +382,11 @@ double ExpressionElement::factorial(double x)
     // We do not use the gamma function.
     int integerInput = (int) x;
 
-    if((x - integerInput > 0.00000001)
+    if((x - integerInput > 0)
         || (x < 0))
     {
+        // Can't do factorial of non-integers and
+        // negative numbers.
         throw 203;
     }
     else if(integerInput == 0)
@@ -393,11 +395,11 @@ double ExpressionElement::factorial(double x)
         return 1;
     }
 
-    QVector<int> factorialSaveVector = QVector<int>(x);
+    QVector<long int> factorialSaveVector = QVector<long int>(x);
     factorialSaveVector[0] = x;
 
     for(int i = 1; i < factorialSaveVector.size(); i++) {
-        factorialSaveVector[i] = factorialSaveVector.at(i-1) * (x-i);
+        factorialSaveVector[i] = (long int) factorialSaveVector.at(i-1) * (x-i);
     }
     return factorialSaveVector.last();
 }
