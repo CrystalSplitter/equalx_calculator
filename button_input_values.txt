@@ -1,19 +1,19 @@
-log -> log
-ln -> ln
+log -> log(
+ln -> ln(
 e -> e
 pi -> pi
 
-sin -> sin
-cos -> cos
-tan -> tan
-arcsin -> arcsin
-arccos -> arccos
-arctan -> arctan
+sin -> sin(
+cos -> cos(
+tan -> tan(
+arcsin -> arcsin(
+arccos -> arccos(
+arctan -> arctan(
 
 ! -> !
 nCr -> C
 nPr -> P
 
-sinh -> sinh
-cosh -> cosh
-tanh -> tanh
+sinh -> sinh(
+cosh -> cosh(
+tanh -> tanh(
