@@ -15,10 +15,16 @@ UnitTester::UnitTester(int accuracy, bool showSuccess)
 //      If they are not, print a qCritical message.
 int UnitTester::assertEqual(QString name, double result, double expected)
 {
-    double diff = std::abs(result - expected);
+    // Throwaway reference
+    int n1;
+    int n2;
+
+    double resultSig = /*frexp(result, &n1);*/ result;
+    double expectedSig = /*frexp(expected, &n2);*/ expected;
+    double diff = std::abs(resultSig - expectedSig);
     if(diff > errorbar_)
     {
-        qCritical() << qSetRealNumberPrecision(accuracy_+2) << name << "FAILURE:" << "\n    Expected:" << expected << "\n    Received:" << result << "\n    Diff:" << diff;
+        qCritical() << qSetRealNumberPrecision(accuracy_+2) << name << "FAILURE:" << "\n    Expected:" << expectedSig << "\n    Received:" << resultSig << "\n    Diff:" << diff;
         return 1;
     }
     else if(showSuccess_)

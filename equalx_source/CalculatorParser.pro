@@ -25,3 +25,5 @@ HEADERS  += mainwindow.h \
          expressionelement.h
 
 FORMS    += mainwindow.ui
+
+CONFIG += c++11

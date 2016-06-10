@@ -20,15 +20,24 @@ void StringCalculator::setup()
     ExpressionElement::setupOperationMap();
 
     // Put most imminent first.
+    OP_ORDER.append("pi");
+    OP_ORDER.append("e");
+
     OP_ORDER.append("C");
     OP_ORDER.append("P");
     OP_ORDER.append("!");
+    OP_ORDER.append("atan");
+    OP_ORDER.append("acos");
+    OP_ORDER.append("asin");
+    OP_ORDER.append("tanh");
+    OP_ORDER.append("cosh");
+    OP_ORDER.append("sinh");
     OP_ORDER.append("tan");
     OP_ORDER.append("cos");
     OP_ORDER.append("sin");
+    OP_ORDER.append("ln");
+    OP_ORDER.append("log");
     OP_ORDER.append("^");
-    OP_ORDER.append("pi");
-    OP_ORDER.append("e");
     OP_ORDER.append("*");
     OP_ORDER.append("/");
     OP_ORDER.append("-");

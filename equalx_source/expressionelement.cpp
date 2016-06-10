@@ -68,23 +68,29 @@ void ExpressionElement::setupOperationMap()
     ExpressionElement::opToIntMap_[QString("-")] = 0x000000002D;
     ExpressionElement::opToIntMap_[QString("*")] = 0x000000002A;
     ExpressionElement::opToIntMap_[QString("/")] = 0x000000002F;
-    ExpressionElement::opToIntMap_[QString("e")] = 0x0000000065;
     ExpressionElement::opToIntMap_[QString("^")] = 0x000000005E;
-    ExpressionElement::opToIntMap_[QString("pi")] = 0x0000007069;
+    ExpressionElement::opToIntMap_[QString("log")] =  0x00006C6F67;
+    ExpressionElement::opToIntMap_[QString("ln")] =  0x0000006C6E;
     ExpressionElement::opToIntMap_[QString("sin")] = 0x000073696E;
     ExpressionElement::opToIntMap_[QString("cos")] = 0x0000636F73;
     ExpressionElement::opToIntMap_[QString("tan")] = 0x000074616E;
+    ExpressionElement::opToIntMap_[QString("sinh")] = 0x0073696E68;
+    ExpressionElement::opToIntMap_[QString("cosh")] = 0x00636F7368;
+    ExpressionElement::opToIntMap_[QString("tanh")] = 0x0074616E68;
+    ExpressionElement::opToIntMap_[QString("asin")] = 0x006173696E;
+    ExpressionElement::opToIntMap_[QString("acos")] = 0x0061636F73;
+    ExpressionElement::opToIntMap_[QString("atan")] = 0x006174616E;
     ExpressionElement::opToIntMap_[QString("!")] = 0x0000000021;
     ExpressionElement::opToIntMap_[QString("P")] = 0x0000000050;
     ExpressionElement::opToIntMap_[QString("C")] = 0x0000000043;
+    ExpressionElement::opToIntMap_[QString("pi")] = 0x0000007069;
+    ExpressionElement::opToIntMap_[QString("e")] = 0x0000000065;
     // TODO: Make more operations!
 }
 
 // Combines 3 expression elements together and returns a number expression element.
-//      This only works if they are in the correct order, which is:
-//
-//          Double Operation Double
-//
+//      This only works if they are in a valid order for the specific operation.
+//      Each operation has its own requirements.
 //      Elsewise there will be errors.
 QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, ExpressionElement after)
 {
@@ -150,18 +156,26 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             }
             break;
         case 0x000000002F:
-        {
-            // Division
-            if(validSimpleOp)
             {
-                value = before.value_ / after.value_;
+                // Division
+                if(validSimpleOp && after.value_)
+                {
+                    if(after.value_ == 0)
+                    {
+                        // Since C++ supports
+                        // division by zero with floats,
+                        // we should add a special case where
+                        //
+                        throw 204;
+                    }
+                    value = before.value_ / after.value_;
+                }
+                else
+                {
+                   throw 203;
+                }
+                break;
             }
-            else
-            {
-               throw 203;
-            }
-            break;
-        }
         case 0x0000000065:
             // the natural number e
             value = M_E;
@@ -185,18 +199,64 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             }
             break;
         case 0x000000005E:
-        {
-            // Exponent
-            if(validSimpleOp)
             {
-                value = pow(before.value_, after.value_);
+                // Exponent
+                if(validSimpleOp)
+                {
+                    value = pow(before.value_, after.value_);
+                }
+                else
+                {
+                   throw 203;
+                }
+                break;
             }
-            else
+        case 0x00006C6F67:
             {
-               throw 203;
+                // Logarithm
+                double coefficient = 1.0;
+                if(!after.isNumber_)
+                {
+                    throw 203;
+                }
+                else if(after.value_ <= 0)
+                {
+                    throw 204;
+                }
+                else if(!before.isNumber_)
+                {
+                    returnBefore = true;
+                }
+                else
+                {
+                    coefficient = before.value_;
+                }
+                value = coefficient * log10(after.value_);
+                break;
             }
-            break;
-        }
+        case 0x0000006C6E:
+            {
+                // Natural Logarithm
+                double coefficient = 1.0;
+                if(!after.isNumber_)
+                {
+                    throw 203;
+                }
+                else if(after.value_ <= 0)
+                {
+                    throw 204;
+                }
+                else if(!before.isNumber_)
+                {
+                    returnBefore = true;
+                }
+                else
+                {
+                    coefficient = before.value_;
+                }
+                value = coefficient * log(after.value_);
+                break;
+            }
         case 0x0000007069:
             // Pi
             value = M_PI;
@@ -220,46 +280,64 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
             }
             break;
         case 0x000073696E:
-        {
-            // Sine
-            if(!after.isNumber_)
             {
-                throw 203;
-            }
+                // Sine
+                if(!after.isNumber_)
+                {
+                    throw 203;
+                }
 
-            if(before.isNumber_)
-            {
-                value = before.value_ * sin(after.value_*conversion_);
+                if(before.isNumber_)
+                {
+                    value = before.value_ * sin(after.value_*conversion_);
+                }
+                else
+                {
+                    value = sin(after.value_*conversion_);
+                    returnBefore = true;
+                }
+                break;
             }
-            else
-            {
-                value = sin(after.value_*conversion_);
-                returnBefore = true;
-            }
-            break;
-        }
         case 0x0000636F73:
-        {
-            // Cosine
-            if(!after.isNumber_)
             {
-               throw 203;
-            }
+                // Cosine
+                if(!after.isNumber_)
+                {
+                    throw 203;
+                }
 
-            if(before.isNumber_)
-            {
-                value = before.value_ * cos(after.value_*conversion_);
+                if(before.isNumber_)
+                {
+                    value = before.value_ * cos(after.value_*conversion_);
+                }
+                else
+                {
+                    value = cos(after.value_ * conversion_);
+                    returnBefore = true;
+                }
+                break;
             }
-            else
-            {
-                value = cos(after.value_*conversion_);
-                returnBefore = true;
-            }
-            break;
-        }
         case 0x000074616E:
-        {
-            // Tangent
+            {
+                // Tangent
+                if(!after.isNumber_)
+                {
+                   throw 203;
+                }
+
+                if(before.isNumber_)
+                {
+                    value = before.value_ * tan(after.value_ * conversion_);
+                }
+                else
+                {
+                    value = tan(after.value_ * conversion_);
+                    returnBefore = true;
+                }
+                break;
+            }
+        case 0x0073696E68:
+            // Hyperbolic Sine
             if(!after.isNumber_)
             {
                throw 203;
@@ -267,76 +345,172 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
 
             if(before.isNumber_)
             {
-                value = before.value_ * tan(after.value_*conversion_);
+                value = before.value_ * sinh(after.value_ * conversion_);
             }
             else
             {
-                value = cos(after.value_*conversion_);
+                value = sinh(after.value_ * conversion_);
                 returnBefore = true;
             }
             break;
-        }
-        case 0x0000000021:
-        {
-            // Factorial
-            double multVal = 1; // Multiply this at the end
-
-            if(after.isNumber_)
+        case 0x00636F7368:
+            // Hyperbolic Cosine
+            if(!after.isNumber_)
             {
-                // If there's a number after
-                // the factorial, multiply it to the end
-                multVal = after.value_;
+               throw 203;
+            }
+
+            if(before.isNumber_)
+            {
+                value = before.value_ * cosh(after.value_ * conversion_);
             }
             else
             {
-                // If there's an operation instead,
-                // return it with the output.
-                returnAfter = true;
+                value = cosh(after.value_ * conversion_);
+                returnBefore = true;
             }
-
-            if(!before.isNumber_)
-            {
-                throw 203;
-            }
-            else
-            {
-                value = (double) ExpressionElement::factorial(before.value_);
-            }
-
-            // Multiply by the right number if it exists.
-            value = value * multVal;
             break;
-        }
+        case 0x0074616E68:
+            // Hyperbolic Tangent
+            if(!after.isNumber_)
+            {
+               throw 203;
+            }
+
+            if(before.isNumber_)
+            {
+                value = before.value_ * tanh(after.value_ * conversion_);
+            }
+            else
+            {
+                value = tanh(after.value_ * conversion_);
+                returnBefore = true;
+            }
+            break;
+        case 0x006173696E:
+            {
+                // Arcsine
+                if(!after.isNumber_)
+                {
+                   throw 203;
+                }
+
+                if(before.isNumber_)
+                {
+                    value = before.value_ *  asin(after.value_) / conversion_;
+                }
+                else
+                {
+                    value = asin(after.value_) / conversion_;
+                    returnBefore = true;
+                }
+                break;
+            }
+        case 0x0061636F73:
+            {
+                // Arccosine
+                if(!after.isNumber_)
+                {
+                   throw 203;
+                }
+
+                if(before.isNumber_)
+                {
+                    value = before.value_ * acos(after.value_) / conversion_;
+                }
+                else
+                {
+                    value = acos(after.value_) / conversion_;
+                    returnBefore = true;
+                }
+                break;
+            }
+        case 0x006174616E:
+            {
+                // Arctangent
+                if(!after.isNumber_)
+                {
+                   throw 203;
+                }
+
+                if(before.isNumber_)
+                {
+                    value = before.value_ *  atan(after.value_) / conversion_;
+                }
+                else
+                {
+                    value = atan(after.value_) / conversion_;
+                    returnBefore = true;
+                }
+                break;
+            }
+        case 0x0000000021:
+            {
+                // Factorial
+                double multVal = 1; // Multiply this at the end
+
+                if(after.isNumber_)
+                {
+                    // If there's a number after
+                    // the factorial, multiply it to the end
+                    multVal = after.value_;
+                }
+                else
+                {
+                    // If there's an operation instead,
+                    // return it with the output.
+                    returnAfter = true;
+                }
+
+                if(!before.isNumber_)
+                {
+                    throw 203;
+                }
+                else
+                {
+                    value = (double) ExpressionElement::factorial(before.value_);
+                }
+
+                // Multiply by the right number if it exists.
+                value = value * multVal;
+                break;
+            }
         case 0x0000000050:
             // Permutations
             // Make sure that there are integers before and after
             // the P.
-            if(!after.isNumber_ || !before.isNumber_)
+            if(!validSimpleOp)
             {
                 throw 203;
             }
 
-            value = ExpressionElement::factorial(before.value_) / ExpressionElement::factorial(before.value_ - after.value_);
+            value = (double) (ExpressionElement::factorial(before.value_) / ExpressionElement::factorial(before.value_-after.value_));
             break;
         case 0x0000000043:
-            // Combinations
-            // Make sure that there are integers before and after
-            // the P.
-            if(!after.isNumber_ || !before.isNumber_)
             {
-                throw 203;
-            }
+                // Combinations
+                // Make sure that there are integers before and after
+                // the C.
+                if(!validSimpleOp)
+                {
+                    throw 203;
+                }
 
-            // TODO:
-            // Debug statements
-            //qDebug() << "top " <<  ExpressionElement::factorial(before.value);
-            //qDebug() << "bot " << (ExpressionElement::factorial(before.value-after.value)*ExpressionElement::factorial(after.value));
-            value = ExpressionElement::factorial(before.value_)/(ExpressionElement::factorial(before.value_-after.value_)*ExpressionElement::factorial(after.value_));
-            break;
+                double denom = ExpressionElement::factorial(before.value_-after.value_)*ExpressionElement::factorial(after.value_);
+                value = (double) (ExpressionElement::factorial(before.value_) / denom);
+                break;
+            }
         default:
             // INTERNAL ERROR: Not a number nor a valid operator
             throw 202;
             break;
+    }
+
+    if(abs(value) > pow(10, 100))
+    {
+        // INTERNAL ERROR
+        // Answer is outside calculator bounds.
+        throw 204;
     }
 
     // Return the expression element before this one?
@@ -346,6 +520,7 @@ QVector<ExpressionElement> ExpressionElement::calc(ExpressionElement before, Exp
     }
 
     // Append the actual number to output vector
+
     ExpressionElement numberElement = ExpressionElement(value);
     outputVector.append(numberElement);
 
@@ -374,8 +549,8 @@ void ExpressionElement::useDegrees(bool y)
 // factorial()
 //      Takes a double and makes sure that it is an integer
 //      Returns the output which while is numerically always
-//      an integer, returns it as a double because we always
-//      deal with doubles anyways.
+//      an integer, returns it as a long because factorials
+//      tend to get very large quickly.
 double ExpressionElement::factorial(double x)
 {
     // Get integer value of the left number.
@@ -395,11 +570,14 @@ double ExpressionElement::factorial(double x)
         return 1;
     }
 
-    QVector<long int> factorialSaveVector = QVector<long int>(x);
+    // Use a double here due to the ability to store the significand.
+    // The significand is what will matter in the end eventually anyways.
+    // Using longs will usually overflow, unfortunately.
+    QVector<double> factorialSaveVector = QVector<double>(x);
     factorialSaveVector[0] = x;
-
-    for(int i = 1; i < factorialSaveVector.size(); i++) {
-        factorialSaveVector[i] = (long int) factorialSaveVector.at(i-1) * (x-i);
+    for(int i = 1; i < factorialSaveVector.size(); i++)
+    {
+        factorialSaveVector[i] = (double) factorialSaveVector.at(i-1) * (x-i);
     }
     return factorialSaveVector.last();
 }
