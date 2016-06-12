@@ -182,7 +182,7 @@ void MainWindow::on_btnFact_clicked()
 {
     text->setText(text->text() + "!");
     ui->listDisplay->addItem(text);
-    parseableString.append(MainWindow::addBrackets("!", true));
+    parseableString.append(MainWindow::addBrackets("!", false));
 }
 
 void MainWindow::on_btnSin_clicked()
@@ -210,35 +210,35 @@ void MainWindow::on_btnnCm_clicked()
 {
     text->setText(text->text() + "C");
     ui->listDisplay->addItem(text);
-    parseableString.append(MainWindow::addBrackets("C", true));
+    parseableString.append(MainWindow::addBrackets("C", false));
 }
 
 void MainWindow::on_btnArcSin_clicked()
 {
-    text->setText(text->text() + "arcsin(");
+    text->setText(text->text() + "asin(");
     ui->listDisplay->addItem(text);
-    parseableString.append(MainWindow::addBrackets("arcsin", false) + "(");
+    parseableString.append(MainWindow::addBrackets("asin", false) + "(");
 }
 
 void MainWindow::on_btnArcCos_clicked()
 {
-    text->setText(text->text() + "arccos(");
+    text->setText(text->text() + "acos(");
     ui->listDisplay->addItem(text);
-    parseableString.append(MainWindow::addBrackets("arccos", false) + "(");
+    parseableString.append(MainWindow::addBrackets("acos", false) + "(");
 }
 
 void MainWindow::on_btnArcTan_clicked()
 {
-    text->setText(text->text() + "arctan(");
+    text->setText(text->text() + "atan(");
     ui->listDisplay->addItem(text);
-    parseableString.append(MainWindow::addBrackets("arctan", false) + "(");
+    parseableString.append(MainWindow::addBrackets("atan", false) + "(");
 }
 
 void MainWindow::on_btnnPm_clicked()
 {
     text->setText(text->text() + "P");
     ui->listDisplay->addItem(text);
-    parseableString.append(MainWindow::addBrackets("P", true));
+    parseableString.append(MainWindow::addBrackets("P", false));
 }
 
 void MainWindow::on_btnSinh_clicked()
@@ -288,6 +288,7 @@ void MainWindow::on_btnDegAndRad_clicked()
 
 //End of Repetitive Button Code
 
+//The parseable string needs brackets to differentiate different functions and operations, and also for the special cases of e and pi.
 QString MainWindow::addBrackets(QString symbol, bool special)
 {
    QString newText = symbol;
@@ -313,10 +314,25 @@ void MainWindow::on_btnEval_clicked()
         {
             equation->setText(text->text());
             //Debug Message to show what's going into the "engine"
-            QMessageBox::information(this, "New String:", parseableString);
+            //QMessageBox::information(this, "New String:", parseableString);
             value = StringCalculator::calculateQStringInput(parseableString);
             //Int to QString Conversion
-            QString result = QString::number(value);
+            QString result;
+            //Scientific notation for both large numbers and decimals
+            if (QString::number(value).length() >= 10)
+            {
+                if (value > 10000000000)
+                {
+                    value = value/10;
+                    result = QString::number(value);
+                }
+                else
+                {
+                    value = pow(10, value);
+                    result = QString::number(value) + "e-" + QString::number(equation->text().length());
+                }
+            }
+            //append results to screen
             items.append(equation->text());
             items.append("=" + result);
             ui->listDisplay->addItems(items);
@@ -357,6 +373,8 @@ void MainWindow::on_btnEval_clicked()
                 case 201:
                     QMessageBox::information(this, "Error", "You inputed something the calculator could not expect. Well done!");
                 break;
+                case 204:
+                    QMessageBox::information(this, "Error", "Your answer was larger than a googol. which is not something our calculator can account for.");
                 default:
                     QMessageBox::information(this, "Wow", "Look, we have an error for everything we could resonably expect and even unexpect.\n"
                                                           "You managed to do something beyond the unexpected. You're one of those people who thinks"
@@ -371,7 +389,7 @@ void MainWindow::on_btnEval_clicked()
         QMessageBox::information(this, "Nothing to Do", "There is no text detected on the screen.");
     }
 }
-
+//Grabs the last line to be used as the answer.
 void MainWindow::on_btnAnswer_clicked()
 {
     if (ui->listDisplay->count() > 1)
@@ -384,60 +402,59 @@ void MainWindow::on_btnAnswer_clicked()
         QMessageBox::information(this, "No History", "Can not append history to current calculation. No history exists.");
     }
 }
-
+//Good Luck Understanding This
 void MainWindow::on_btnDelete_clicked()
 {
     QString newText = text->text();
     QString ref = newText.right(newText.length() - 3);
-    QMessageBox::information(this, "ref", ref);
-    if (!text->text().isEmpty() &&  !parseableString.isEmpty())
+    //Debug QMessageBox::information(this, "ref", ref);
+    if (!text->text().isEmpty() && !parseableString.isEmpty())
     {
-
-    if (!parseableString.isEmpty() && newText.at(newText.length() -1) != 'e' && ref != "pi" && newText.at(newText.length() -1) != '!' && newText.at(newText.length() -1) != 'C' && newText.at(newText.length() -1) != 'P')
-    {
-    QMessageBox::information(this, "New String:", parseableString);
-
-    int firstMark = -1;
-        if (parseableString.at(parseableString.length() - 1) == ']')
+        if (!parseableString.isEmpty() && newText.at(newText.length() -1) != 'e' && ref != "pi" && newText.at(newText.length() -1) != '!' && newText.at(newText.length() -1) != 'C' && newText.at(newText.length() -1) != 'P')
         {
-            int chopCount = 0;
-            for(int i = parseableString.length() - 1; i >= 0; i--)
-            {
-                if (parseableString.at(i) == ']')
-                {
-                    firstMark = parseableString.indexOf(parseableString.at(i));
-                }
-                else if (parseableString.at(i) == '[' && firstMark >= 0)
-                {
-                    chopCount++;
-                    break;
-                }
+       //Debug QMessageBox::information(this, "New String:", parseableString);
 
-                if(firstMark >= 0)
+        int firstMark = -1;
+            if (parseableString.at(parseableString.length() - 1) == ']')
+            {
+                int chopCount = 0;
+                for(int i = parseableString.length() - 1; i >= 0; i--)
                 {
-                    chopCount++;
+                    if (parseableString.at(i) == ']')
+                    {
+                        firstMark = parseableString.indexOf(parseableString.at(i));
+                    }
+                    else if (parseableString.at(i) == '[' && firstMark >= 0)
+                    {
+                        chopCount++;
+                        break;
+                    }
+
+                    if(firstMark >= 0)
+                    {
+                        chopCount++;
+                    }
+
+                }
+                QStringRef removeText = newText.rightRef(chopCount - 3);
+                QChar symbolCheck = removeText.toString().at(removeText.toString().length() - 1);
+                parseableString.chop(chopCount);
+               //Debug  QMessageBox::information(this, "Text to be removed", removeText.toString());
+                if (symbolCheck.isSymbol() || symbolCheck.isPunct())
+                {
+                    //Debug QMessageBox::warning(this, "Triggered", "Contains Symbol");
+                    newText.chop(1);
+                    text->setText(newText);
+                    ui->listDisplay->addItem(text);
+                }
+                else
+                {
+                    newText.chop(removeText.length());
+                    text->setText(newText);
+                    ui->listDisplay->addItem(text);
                 }
 
             }
-            QStringRef removeText = newText.rightRef(chopCount - 3);
-            QChar symbolCheck = removeText.toString().at(removeText.toString().length() - 1);
-            parseableString.chop(chopCount);
-            QMessageBox::information(this, "Text to be removed", removeText.toString());
-            if (symbolCheck.isSymbol() || symbolCheck.isPunct())
-            {
-                QMessageBox::warning(this, "Triggered", "Contains Symbol");
-                newText.chop(1);
-                text->setText(newText);
-                ui->listDisplay->addItem(text);
-            }
-            else
-            {
-                newText.chop(removeText.length());
-                text->setText(newText);
-                ui->listDisplay->addItem(text);
-            }
-
-        }
         else
         {
             parseableString.chop(1);
@@ -461,6 +478,13 @@ void MainWindow::on_btnDelete_clicked()
         text->setText(newText);
         ui->listDisplay->addItem(text);
     }
+    else if (newText.at(newText.length() - 5) == 'a')
+    {
+        parseableString.chop(4);
+        newText.chop(4);
+        text->setText(newText);
+        ui->listDisplay->addItem(text);
+    }
     }
     else if (newText.isEmpty() && !parseableString.isEmpty())
     {
@@ -480,10 +504,11 @@ void MainWindow::on_listDisplay_currentRowChanged(int currentRow)
         }
     }
 }
-
+//Grabs the history
 void MainWindow::on_listDisplay_doubleClicked(const QModelIndex &index)
 {
-    QMessageBox::information(this, "It worked.", "Yay! :D");
+    //Old Debug Message to try and figure out whether the method was being triggered or not.
+    //MessageBox::information(this, "It worked.", "Yay! :D");
     QString history = ui->listDisplay->item(index.row())->text();
     if (history.contains("="))
     {
@@ -493,17 +518,19 @@ void MainWindow::on_listDisplay_doubleClicked(const QModelIndex &index)
     ui->listDisplay->addItem(text);
 }
 
+//Changes over the index of buttons to the function page
 void MainWindow::on_btnSci_clicked()
 {
     ui->stackedWidget->setCurrentIndex(1);
 }
 
-
+//Goes Back to the main screen
 void MainWindow::on_btnBack_clicked()
 {
     ui->stackedWidget->setCurrentIndex(0);
 }
 
+//Rather than repeat all the code, I just trigger the button on the first page to be hit
 void MainWindow::on_btnSciEqual_clicked()
 {
     ui->btnEval->click();
