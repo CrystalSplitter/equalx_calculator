@@ -1,260 +1,310 @@
-#include <iostream>
-#include <QApplication>
-#include <QDebug>
+#include <algorithm>
 
 #include "stringcalculator.h"
 
-// Put in header later
-static QVector<Operation::Enum> OP_ORDER = QVector<Operation::Enum>();
 
-// ============================================================================
-// STRING CALCULATOR CODE
-// ============================================================================
+QVector<QString> StringCalculator::OP_ORDER; // Order of operations
 
-int StringCalculator::subMain()
+StringCalculator::StringCalculator() {} // No constructor, this is a faux static class
+
+// ==============================================================================================================================================
+// # Methods                                                                                                                                    #
+// ==============================================================================================================================================
+
+// setup()
+//      Sets up the calculator for use, giving initalisation values such as
+//      the order of operations and the operation mappings.
+void StringCalculator::setup()
 {
-    OP_ORDER.append(Operation::powa);
-    OP_ORDER.append(Operation::mult);
-    OP_ORDER.append(Operation::div);
-    OP_ORDER.append(Operation::add);
-    OP_ORDER.append(Operation::sub);
+    // Setup the operation map for all the expression elements.
+    ExpressionElement::setupOperationMap();
 
-    QVector<char> val1 = convertToVector(QString("(9+3)^3"));
-    double t = calculateCharVector(val1);
-
-    qDebug() << t << '\n';
-    return 0;
+    // Put most imminent first.
+    OP_ORDER.append("tan");
+    OP_ORDER.append("cos");
+    OP_ORDER.append("sin");
+    OP_ORDER.append("^");
+    OP_ORDER.append("pi");
+    OP_ORDER.append("e");
+    OP_ORDER.append("*");
+    OP_ORDER.append("/");
+    OP_ORDER.append("-");
+    OP_ORDER.append("+");
 }
 
-/*
- * calculateCharVector:
- *
- * First converts a char QVector to a ExpressionElement QVector
- * using generateVector. Then uses calculateList to get a single
- * ExpressionElement that represents the value inputted.
- *
- * Finally, returns the resulting double.
- */
-double StringCalculator::calculateCharVector(QVector<char> v)
+// calculateQStringInput(QString input)
+//
+//
+// Returns:
+//      A double which is the mathematical equivalent of the input.
+double StringCalculator::calculateQStringInput(QString input)
 {
-    QVector<ExpressionElement> expressionList = generateVector(v);
-    ExpressionElement result = calculateList(expressionList);
-    return result.value;
+    QVector<ExpressionElement> expressionVector = genExpressionElements(input);
+    ExpressionElement condensedElement = calculateVectorInput(expressionVector);
+    double value = condensedElement.value;
+    return value;
 }
 
-/*
- * calculateList:
- *
- * Calculates out a ExpressionElement QVector, and returns a *single* ExpressionElement
- * Which turns out, is pretty damn handy.
- *
- * This is done by iterating through OP_ORDER, which is organised in the order of PEMDAS.
- * First it finds the number of times the highest priority operation occurs, then it goes
- * and runs through, merging the ExpressionElements that surround that operation.
- *
- * This repeats until there is only a single ExpressionElement left, which in theory should
- * ALWAYS be a number type ExpressionElement.
- */
-ExpressionElement StringCalculator::calculateList(QVector<ExpressionElement> elements)
+// ---------------------------------------------------------------------------------------------------------------------------------------
+// | Functions that are called by the calculator                                                                                         |
+// ---------------------------------------------------------------------------------------------------------------------------------------
+
+// genExpressionElements(QString input)
+//      The parsing section of the calculator.
+//
+//      Generates an QVector of expression elements from a QString input
+//      This QVector can then be processed to give a quantitative value.
+QVector<ExpressionElement> StringCalculator::genExpressionElements(QString input)
+{
+    // Declare our output vector, starting with size 0.
+    QVector<ExpressionElement> expressionVector = QVector<ExpressionElement>(0);
+
+    // Index that determines where to start when searching for the next operation
+    int crawlIndex = 0;
+
+    while(crawlIndex < input.length())
+    {
+
+        //--------------------------------------------------------------------------------------------------------------------------------
+        // Operation handling
+        //--------------------------------------------------------------------------------------------------------------------------------
+
+        // Check for operations
+        if(input.at(crawlIndex) == QChar('['))
+        {
+            int operationEnd = input.indexOf("]", crawlIndex);
+
+            // Is there a closing bracket?
+            if(operationEnd < 0)
+            {
+                // INTERNAL ERROR
+                // No closing bracket for operation
+                throw 103;
+            }
+            else
+            {
+                // Add a new expression element to the vector
+                expressionVector.append(ExpressionElement(input.mid(crawlIndex, operationEnd + 1 - crawlIndex)));
+                crawlIndex = operationEnd + 1;
+                continue;
+            }
+        }
+
+
+
+
+        //--------------------------------------------------------------------------------------------------------------------------------
+        // Subexpression handling
+        //--------------------------------------------------------------------------------------------------------------------------------
+
+        if(input.at(crawlIndex) == QChar('('))
+        {
+
+            // Turns out the below statement doesn't work.
+            //int subexpressionEnd = input.indexOf(")", crawlIndex);
+            int subexpressionEnd = crawlIndex+1; // A placeholder value for where the subexpression ends.
+            int subexpressionCounter = 1; // Counts how many subexpressions we need to end.
+
+            // Loop through the input, counting up all the open and close parens to find our matching one
+            int parenI = subexpressionEnd;
+            for(; parenI < input.size(); parenI++)
+            {
+                if(input.at(parenI) == QChar('('))
+                {
+                    subexpressionCounter++;
+                }
+                else if(input.at(parenI) == QChar(')'))
+                {
+                    subexpressionCounter--;
+                    if(subexpressionCounter == 0)
+                    {
+                        // Stop incrementing parenI here.
+                        break;
+                    }
+                }
+
+                // We haven't found the close paren yet, increment parenI.
+            }
+
+            // We either found the closing paren or we didn't.
+            // Assign it the value of the loop iterator.
+            subexpressionEnd = parenI;
+
+            if(subexpressionEnd < 0)
+            {
+                subexpressionEnd = input.size();
+            }
+            double subexpressionNet = calculateQStringInput(input.mid(crawlIndex + 1, subexpressionEnd - 1 - crawlIndex));
+
+            // Support stuff like 5(10) = 50
+            if(!expressionVector.isEmpty())
+            {
+                if(expressionVector.at(expressionVector.size()-1).isNumber)
+                {
+                    expressionVector.append(ExpressionElement("[*]"));
+                }
+            }
+            expressionVector.append(ExpressionElement(subexpressionNet));
+            crawlIndex = subexpressionEnd + 1;
+            continue;
+        }
+
+
+
+
+        //--------------------------------------------------------------------------------------------------------------------------------
+        // Number handling
+        //--------------------------------------------------------------------------------------------------------------------------------
+
+        // Not an operation, so it must be a number.
+
+        // Check to see if last element is a number so that we can multiply it to this one
+        if(!expressionVector.isEmpty()) // Insure that the vector isn't empty yet.
+        {
+            if(expressionVector.at(expressionVector.size()-1).isNumber)
+            {
+                expressionVector.append(ExpressionElement("[*]")); // Support stuff like (10)5 = 50
+            }
+        }
+
+        int nextOperation = input.indexOf('[', crawlIndex);
+        int nextSubexpression = input.indexOf("(", crawlIndex);
+
+        if(nextOperation < 0)
+        {
+            nextOperation = input.size()+1;
+        }
+
+        if(nextSubexpression < 0)
+        {
+            nextSubexpression = input.size()+1;
+        }
+
+        // Get where the number should end, which is right up to next paren or bracket.
+        int numberEnd = std::min(nextOperation, nextSubexpression);
+
+        // Check to make sure we didn't somehow grab a close paren
+        int closingBracketCheck = input.indexOf(')', crawlIndex);
+        if(closingBracketCheck < numberEnd && closingBracketCheck >= 0)
+        {
+            // SYNTAX ERROR
+            // Closing paren with no open paren.
+            throw 104;
+        }
+
+        // Is there another operation?
+        if(nextOperation < 0 && nextSubexpression < 0)
+        {
+            // No more operations or subexpressions. Append the last number.
+            expressionVector.append(ExpressionElement(input.right(input.size() - crawlIndex)));
+            break;
+        }
+        else
+        {
+            // More operations to go through!
+            expressionVector.append(ExpressionElement(input.mid(crawlIndex, numberEnd - crawlIndex)));
+            crawlIndex = numberEnd;
+            continue;
+        }
+
+        crawlIndex++; // Just in case of infinite looping. Consider removing later.
+    }
+
+    return expressionVector; // return the expression vector output.
+}
+
+// calculateVectorInput(QVector<ExpressionElement> input)
+//
+//
+//
+ExpressionElement StringCalculator::calculateVectorInput(QVector<ExpressionElement> input)
 {
     // Copy the old list that we will boil down to
     // a single expression element.
-    QVector<ExpressionElement> newVector = QVector<ExpressionElement>(elements);
+    QVector<ExpressionElement> modifiableVector = QVector<ExpressionElement>(input);
 
-    // If the first element is an operation, put a 0 before it.
-    // This allows us to properly handle things like negative numbers.
-    if(!elements[0].isNumber)
-        newVector.append(ExpressionElement(0.0));
-
-    if(newVector.size() == 2)
+    // Put in implied constants at the beginning
+    if(!input.at(0).isNumber)
     {
-        // TODO:
-        //SYNTAX ERROR
+        if(input.at(0).op == "-" || input.at(0).op == "+") // Allow for negative numbers
+        {
+            modifiableVector.insert(0, ExpressionElement(0));
+        }
+        else // Allow for stuff like "sin 45"
+        {
+            modifiableVector.insert(0, ExpressionElement(1));
+        }
     }
+
+    // Put in implied constants at the end.
+    if(!input.at(input.size()-1).isNumber)
+    {
+        modifiableVector.append(ExpressionElement(1));
+    }
+
+    if(modifiableVector.size() == 2)
+    {
+        // INTERNAL ERROR: It's impossible to have an ExpressionElement vector
+        // of size 2
+        throw 100;
+    }
+
+    //========================================================================================================================================
+    // BEGIN LOOPS
+    //========================================================================================================================================
 
     // Loop through every operation, in the order defined by OP_ORDER
     for(int opIndex = 0; opIndex < OP_ORDER.size(); opIndex++)
     {
+
         int opCount = 0; // Represents the number of this type of operation in the list.
 
-        for(int e = 0; e < newVector.size(); e++)
+        for(int e = 0; e < modifiableVector.size(); e++)
         {
-            ExpressionElement elem = newVector[e];
+            ExpressionElement elem = modifiableVector[e];
             if(!elem.isNumber)
             {
-                if(elem.op == OP_ORDER[opIndex]) { // Check to see if this is our operation
+                if(elem.op == OP_ORDER[opIndex]) // Check to see if this is our operation
+                {
                     opCount++;
                 }
             }
         }
 
+        // Go through every operation of this type first and calculate it out.
         while(opCount > 0)
         {
-
             int i = 0; // Iterator for each operation
-            while(i < newVector.size()-2)
+            while(i < modifiableVector.size()-2)
             {
-                // Get the element in front of this one, and check
-                // if it's an operation.
-                ExpressionElement elem = newVector[i+1];
-                if(!elem.isNumber)
+                // Get the element in front of this one, and check if it's an operation.
+                ExpressionElement opElement = modifiableVector[i+1];
+                if(!opElement.isNumber)
                 {
-                    if(elem.op == OP_ORDER[opIndex])
+
+                    if(opElement.op == OP_ORDER[opIndex])
                     {
                         // TODO:
                         // We need a try catch here for when the calc doesn't work
-                        double eval = elem.calc(newVector[i], newVector[i+2]);
-                        newVector[i] = ExpressionElement(eval);
-                        newVector.removeAt(i+2);
-                        newVector.removeAt(i+1);
+                        QVector<ExpressionElement> calculatedElements = opElement.calc(modifiableVector[i], modifiableVector[i+2]);
+
+                        // Remove these 3 and substitute my own elements.
+                        modifiableVector.removeAt(i+2);
+                        modifiableVector.removeAt(i+1);
+                        modifiableVector.removeAt(i);
+
+                        for(int j = calculatedElements.size() - 1; j >= 0; j--)
+                        {
+                            // Insert the elements in reverse order. This is due to how insertion works.
+                            modifiableVector.insert(i, calculatedElements.at(j));
+                        }
                     }
-                    opCount--;
+                    opCount--; // We removed the element from the list
                 }
                 i++;
             }
         }
     }
 
-    return newVector[0];
-}
-
-/*
- * generateVector:
- *
- * Generates a QVector of ExpressionElements by parsing a QVector of characters
- * This is vital, as to calculate the inputted string, the iterable (in this case
- * the QVector) must be homogenous. Meaning, it has to be made up of all the same
- * types of classes. In this case, ExpressionElement fills this role.
- *
- * Please note, when encountering subexpressions (things surrounded by
- * parentheses), the generation recursively calls calculateCharVector,
- * which in turn will generate a new ExpressionElement QVector for us.
- */
-QVector<ExpressionElement> StringCalculator::generateVector(QVector<char> inputVector)
-{
-    QVector<ExpressionElement> newVector = QVector<ExpressionElement>(0);
-
-    bool grabbingSubExpression = false;
-    int subExpressionStartingIndex = -1;
-
-    bool grabbingNumber = false;
-    int numberStartingIndex = -1; // Index of start of each number.
-    int numberEndingIndex = -1; // Index where the last number ended off on.
-
-
-    for(int i = 0; i < inputVector.size(); i++)
-    {
-        // --------------------------------------------------------------------
-        // SUB EXPRESSION HANDLING
-        // --------------------------------------------------------------------
-
-        // Check for sub expressions first.
-        if(inputVector[i] == '(')
-        {
-            grabbingSubExpression = true;
-            subExpressionStartingIndex = i+1; // Starts at the next character
-            continue; // Move to next character
-        }
-        else if(inputVector[i] == ')')
-        {
-            if(grabbingSubExpression)
-            {
-                grabbingSubExpression = false; // Close the sub expression off
-
-                // Recursively create the sub expression elements
-                QVector<char> subExpression = QVector<char>();
-                // q is an iterator!
-                for(int q = subExpressionStartingIndex; q < i; q++)
-                {
-                    subExpression.append(inputVector[q]);
-                }
-                double subValue = calculateCharVector(subExpression);
-                newVector.append(ExpressionElement(subValue));
-                continue; // Move to next character
-            }
-            else
-            {
-                // TODO:
-                // SYNTAX ERROR: Closing paren but no opening paren
-            }
-        }
-
-        if(grabbingSubExpression)
-            continue;
-
-        // --------------------------------------------------------------------
-        // NUMBER HANDLING
-        // --------------------------------------------------------------------
-
-        // Now check for actual numbers.
-        bool isNumber = isdigit(inputVector[i]);
-        bool isPoint = (inputVector[i] == '.');
-
-        // Check to see if we are
-        if(i == inputVector.size()-1 && (!isNumber && !isPoint))
-        {
-            // TODO:
-            // SYNTAX ERROR: ENDED IN OPERATION
-            break;
-        }
-
-        if(i != inputVector.size() - 1 && (isNumber || isPoint))
-        {
-            // Did we just started grabbing a number?
-            if(!grabbingNumber)
-            {
-                numberStartingIndex = i;
-                grabbingNumber = true;
-            }
-            continue;
-        }
-        else if(grabbingNumber)
-        {
-            // We were grabbing a number but now we aren't.
-            grabbingNumber = false;
-
-            // Did we get here because we reached the EOL or
-            // because we hit a non-number?
-            if(i == inputVector.size()-1)
-            {
-                numberEndingIndex = i+1; // Move the ending index to the EOL
-            }
-            else
-            {
-                numberEndingIndex = i; // Move the ending index to this character
-            }
-
-            // Begin subVector generation -------------------------------------
-            QVector<char> subCharVector = QVector<char>();
-            // q is an iterator!
-            for(int q = numberStartingIndex; q < numberEndingIndex; q++)
-            {
-                subCharVector.append(inputVector[q]);
-            }
-            // End subVector generation ---------------------------------------
-
-            newVector.append(ExpressionElement(subCharVector));
-        }
-        newVector.append(ExpressionElement(inputVector[i]));
-    }
-    return newVector;
-}
-
-// ============================================================================
-// UTILITIES
-// ============================================================================
-
-/*
- * convertToVector:
- *
- * Converts a QString to a char QVector.
- */
-QVector<char> StringCalculator::convertToVector(QString s)
-{
-    QVector<char> newVector = QVector<char>(s.length());
-    for(int i = 0; i < s.length(); i++)
-    {
-        newVector[i] = s.at(i).toLatin1();
-    }
-    return newVector;
+    return modifiableVector[0];
 }
