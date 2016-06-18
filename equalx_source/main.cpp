@@ -115,6 +115,13 @@ int main(int argc, char *argv[])
         tester.assertEqual("74", StringCalculator::calculateQStringInput(QString("[acos](0.5)")), M_PI/3);
         tester.assertEqual("75", StringCalculator::calculateQStringInput(QString("[atan](25")), 1.53081764);
 
+        StringCalculator::useDegrees(true);
+        tester.assertEqual("76", StringCalculator::calculateQStringInput(QString("[sinh](90)")), 2.301298902);
+        tester.assertEqual("77", StringCalculator::calculateQStringInput(QString("[sinh](0)")), 0);
+        tester.assertEqual("78", StringCalculator::calculateQStringInput(QString("[cosh](90)")), 2.509178478);
+        tester.assertEqual("79", StringCalculator::calculateQStringInput(QString("[cosh](0)")), 1);
+        //tester.assertEqual("74", StringCalculator::calculateQStringInput(QString("[acos](0.5)")), M_PI/3);
+
         // ExpressionElement tests
 
         // Setup the operation map
