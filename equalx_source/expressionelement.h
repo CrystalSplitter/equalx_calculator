@@ -8,13 +8,13 @@
 class ExpressionElement
 {
     public:
-        bool isNumber = true;
-        QString op = "None";
-        double value = 0;
+        bool isNumber_ = true;
+        QString op_ = "None";
+        double value_ = 0;
     private:
-        static std::map<QString,int> opToIntMap;
-        static bool useDeg;
-        static double conversion;
+        static std::map<QString,int> opToIntMap_;
+        static bool useDeg_;
+        static double conversion_;
 
     public:
         ExpressionElement();
@@ -26,6 +26,7 @@ class ExpressionElement
         static void useDegrees(bool);
     private:
         bool setOperation(QString);
+        static double factorial(double);
 
 };
 

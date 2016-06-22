@@ -17,6 +17,7 @@ private:
 public:
     static void setup();
     static double calculateQStringInput(QString input);
+    static void useDegrees(bool y);
 
     // Private methods
 private:

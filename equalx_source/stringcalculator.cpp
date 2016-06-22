@@ -7,9 +7,9 @@ QVector<QString> StringCalculator::OP_ORDER; // Order of operations
 
 StringCalculator::StringCalculator() {} // No constructor, this is a faux static class
 
-// ==============================================================================================================================================
-// # Methods                                                                                                                                    #
-// ==============================================================================================================================================
+// ========================================================================================================================================
+// # Methods                                                                                                                              #
+// ========================================================================================================================================
 
 // setup()
 //      Sets up the calculator for use, giving initalisation values such as
@@ -20,16 +20,36 @@ void StringCalculator::setup()
     ExpressionElement::setupOperationMap();
 
     // Put most imminent first.
+    OP_ORDER.append("pi");
+    OP_ORDER.append("e");
+
+    OP_ORDER.append("C");
+    OP_ORDER.append("P");
+    OP_ORDER.append("!");
+    OP_ORDER.append("atan");
+    OP_ORDER.append("acos");
+    OP_ORDER.append("asin");
+    OP_ORDER.append("tanh");
+    OP_ORDER.append("cosh");
+    OP_ORDER.append("sinh");
     OP_ORDER.append("tan");
     OP_ORDER.append("cos");
     OP_ORDER.append("sin");
+    OP_ORDER.append("ln");
+    OP_ORDER.append("log");
     OP_ORDER.append("^");
-    OP_ORDER.append("pi");
-    OP_ORDER.append("e");
     OP_ORDER.append("*");
     OP_ORDER.append("/");
     OP_ORDER.append("-");
     OP_ORDER.append("+");
+}
+
+// useDegrees(bool y)
+//      Allows the user to set whether or not we should use degrees.
+//      Only really modifies a static variable inside the ExpressionElement class
+void StringCalculator::useDegrees(bool y)
+{
+    ExpressionElement::useDegrees(y);
 }
 
 // calculateQStringInput(QString input)
@@ -41,7 +61,7 @@ double StringCalculator::calculateQStringInput(QString input)
 {
     QVector<ExpressionElement> expressionVector = genExpressionElements(input);
     ExpressionElement condensedElement = calculateVectorInput(expressionVector);
-    double value = condensedElement.value;
+    double value = condensedElement.value_;
     return value;
 }
 
@@ -64,7 +84,6 @@ QVector<ExpressionElement> StringCalculator::genExpressionElements(QString input
 
     while(crawlIndex < input.length())
     {
-
         //--------------------------------------------------------------------------------------------------------------------------------
         // Operation handling
         //--------------------------------------------------------------------------------------------------------------------------------
@@ -89,9 +108,6 @@ QVector<ExpressionElement> StringCalculator::genExpressionElements(QString input
                 continue;
             }
         }
-
-
-
 
         //--------------------------------------------------------------------------------------------------------------------------------
         // Subexpression handling
@@ -139,7 +155,7 @@ QVector<ExpressionElement> StringCalculator::genExpressionElements(QString input
             // Support stuff like 5(10) = 50
             if(!expressionVector.isEmpty())
             {
-                if(expressionVector.at(expressionVector.size()-1).isNumber)
+                if(expressionVector.at(expressionVector.size()-1).isNumber_)
                 {
                     expressionVector.append(ExpressionElement("[*]"));
                 }
@@ -161,7 +177,7 @@ QVector<ExpressionElement> StringCalculator::genExpressionElements(QString input
         // Check to see if last element is a number so that we can multiply it to this one
         if(!expressionVector.isEmpty()) // Insure that the vector isn't empty yet.
         {
-            if(expressionVector.at(expressionVector.size()-1).isNumber)
+            if(expressionVector.at(expressionVector.size()-1).isNumber_)
             {
                 expressionVector.append(ExpressionElement("[*]")); // Support stuff like (10)5 = 50
             }
@@ -224,22 +240,37 @@ ExpressionElement StringCalculator::calculateVectorInput(QVector<ExpressionEleme
     QVector<ExpressionElement> modifiableVector = QVector<ExpressionElement>(input);
 
     // Put in implied constants at the beginning
-    if(!input.at(0).isNumber)
+    if(!input.at(0).isNumber_)
     {
-        if(input.at(0).op == "-" || input.at(0).op == "+") // Allow for negative numbers
+        if(input.at(0).op_ == "-" || input.at(0).op_ == "+") // Allow for negative numbers
         {
             modifiableVector.insert(0, ExpressionElement(0));
         }
-        else // Allow for stuff like "sin 45"
+        else if(input.at(0).op_ == "*" || input.at(0).op_ == "/" || input.at(0).op_ == "^") // Complain when we begin with these
+        {
+            // SYNTAX ERROR
+            throw 101;
+        }
+        else // Allow for stuff like "sin(45)" and "log(100)"
         {
             modifiableVector.insert(0, ExpressionElement(1));
         }
     }
 
     // Put in implied constants at the end.
-    if(!input.at(input.size()-1).isNumber)
+    if(!input.at(input.size()-1).isNumber_)
     {
-        modifiableVector.append(ExpressionElement(1));
+        if(input.at(input.size()-1).op_ == "pi"
+                || input.at(input.size()-1).op_ == "e"
+                || input.at(input.size()-1).op_ == "!")
+        {
+            modifiableVector.append(ExpressionElement(1));
+        }
+        else
+        {
+            // SYNTAX ERROR
+            throw 102;
+        }
     }
 
     if(modifiableVector.size() == 2)
@@ -262,9 +293,9 @@ ExpressionElement StringCalculator::calculateVectorInput(QVector<ExpressionEleme
         for(int e = 0; e < modifiableVector.size(); e++)
         {
             ExpressionElement elem = modifiableVector[e];
-            if(!elem.isNumber)
+            if(!elem.isNumber_)
             {
-                if(elem.op == OP_ORDER[opIndex]) // Check to see if this is our operation
+                if(elem.op_ == OP_ORDER[opIndex]) // Check to see if this is our operation
                 {
                     opCount++;
                 }
@@ -279,10 +310,10 @@ ExpressionElement StringCalculator::calculateVectorInput(QVector<ExpressionEleme
             {
                 // Get the element in front of this one, and check if it's an operation.
                 ExpressionElement opElement = modifiableVector[i+1];
-                if(!opElement.isNumber)
+                if(!opElement.isNumber_)
                 {
 
-                    if(opElement.op == OP_ORDER[opIndex])
+                    if(opElement.op_ == OP_ORDER[opIndex])
                     {
                         // TODO:
                         // We need a try catch here for when the calc doesn't work
