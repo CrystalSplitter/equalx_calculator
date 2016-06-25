@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp\
     expressionelement.cpp \
     stringcalculator.cpp \
-    unittester.cpp
+    unittester.cpp \
+    inputrenderer.cpp
 
 HEADERS  += mainwindow.h \
     expressionelement.h \
     stringcalculator.h \
-    unittester.h
+    unittester.h \
+    inputrenderer.h
          expressionelement.h
 
 FORMS    += mainwindow.ui

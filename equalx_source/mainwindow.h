@@ -9,6 +9,8 @@
 #include <QAction>
 #include "expressionelement.h"
 #include "stringcalculator.h"
+#include "inputrenderer.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -20,7 +22,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    enum Operation{none, add, sub, multi, div, powa}; // The types of operations available on this calculator
+    //enum Operation{none, add, sub, multi, div, powa}; // The types of operations available on this calculator
     enum ExpressionElemType{number,operation};
     ~MainWindow();
 
@@ -109,21 +111,23 @@ private slots:
 
     void on_btnSciEqual_clicked();
 
-    QString addBrackets(QString symbol, bool special);
-
     void on_btnClear_clicked();
 
     void on_btnDegAndRad_clicked();
 
 private:
     Ui::MainWindow *ui;
+    void inputButtonClicked(QString input, bool useBrackets, bool appendOpenParen);
+    void updateRenderInput();
+    QString addBrackets(QString symbol);
+
 protected:
     QListWidgetItem *text; // User input before it is put into the history
     QListWidgetItem *equation; //The finalized equation
     QList<QString> items; //How it gets printed pretty much
     double value; //Answer
-    QString parseableString; //blah
-    bool units = false; //False = Radians, Degrees = True
+    QString parseableString; // What gets inputted into the calculator.
+    bool useDegrees = false; // false = Radians, Degrees = true
 };
 
 #endif // MAINWINDOW_H

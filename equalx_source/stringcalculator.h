@@ -3,7 +3,7 @@
 
 #include <QApplication>
 #include <QDebug>
-#include <math.h>
+#include <cmath>
 
 #include "expressionelement.h"
 
@@ -21,10 +21,10 @@ public:
 
     // Private methods
 private:
-    StringCalculator(); // Make the instructor impossible to use.
+    //StringCalculator(); // Make the instructor impossible to use.
     static ExpressionElement calculateVectorInput(QVector<ExpressionElement> input);
     static QVector<ExpressionElement> genExpressionElements(QString input);
-
+    static QString sanitiseInput(QString input);
 };
 
 #endif // STRINGCALCULATOR_H

@@ -1,11 +1,7 @@
-#include <algorithm>
-
 #include "stringcalculator.h"
 
 
 QVector<QString> StringCalculator::OP_ORDER; // Order of operations
-
-StringCalculator::StringCalculator() {} // No constructor, this is a faux static class
 
 // ========================================================================================================================================
 // # Methods                                                                                                                              #
@@ -54,7 +50,8 @@ void StringCalculator::useDegrees(bool y)
 
 // calculateQStringInput(QString input)
 //
-//
+// Params:
+//      input -- the input expression in the form of a QString.
 // Returns:
 //      A double which is the mathematical equivalent of the input.
 double StringCalculator::calculateQStringInput(QString input)
@@ -280,10 +277,8 @@ ExpressionElement StringCalculator::calculateVectorInput(QVector<ExpressionEleme
         throw 100;
     }
 
-    //========================================================================================================================================
     // BEGIN LOOPS
-    //========================================================================================================================================
-
+    // --------------------------------
     // Loop through every operation, in the order defined by OP_ORDER
     for(int opIndex = 0; opIndex < OP_ORDER.size(); opIndex++)
     {
@@ -312,7 +307,6 @@ ExpressionElement StringCalculator::calculateVectorInput(QVector<ExpressionEleme
                 ExpressionElement opElement = modifiableVector[i+1];
                 if(!opElement.isNumber_)
                 {
-
                     if(opElement.op_ == OP_ORDER[opIndex])
                     {
                         // TODO:
@@ -336,6 +330,15 @@ ExpressionElement StringCalculator::calculateVectorInput(QVector<ExpressionEleme
             }
         }
     }
-
+    // --------------------------------
+    // END LOOPS
     return modifiableVector[0];
+}
+
+QString sanitiseInput(QString input)
+{
+    QString output = input.replace("[pi]", "("+QString::number(M_PI)+")");
+    output = output.replace("[e]", "("+QString::number(M_E)+")");
+    output = output.remove("&");
+    return output;
 }

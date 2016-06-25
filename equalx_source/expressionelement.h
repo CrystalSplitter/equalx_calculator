@@ -3,7 +3,7 @@
 
 #include "QApplication"
 #include <QDebug>
-#include <math.h>
+#include <cmath>
 
 class ExpressionElement
 {
@@ -27,7 +27,6 @@ class ExpressionElement
     private:
         bool setOperation(QString);
         static double factorial(double);
-
 };
 
 #endif // EXPRESSIONELEMET_H

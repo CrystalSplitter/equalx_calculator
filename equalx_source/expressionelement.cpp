@@ -42,7 +42,6 @@ QString ExpressionElement::toString() const
 {
     // Returning string
     QString s;
-
     if(this->isNumber_ == true)
     {
         s = QString::number(this->value_);
