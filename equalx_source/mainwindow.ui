@@ -198,56 +198,35 @@
       </widget>
       <widget class="QWidget" name="pageSci">
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
+        <item row="1" column="0">
          <widget class="QPushButton" name="btnLog">
           <property name="text">
            <string>log</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
+        <item row="1" column="1">
          <widget class="QPushButton" name="btnLn">
           <property name="text">
            <string>ln</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
+        <item row="1" column="2">
          <widget class="QPushButton" name="btnE">
           <property name="text">
            <string>e</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="btnPi">
-          <property name="text">
-           <string>pi</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QPushButton" name="btnFact">
-          <property name="text">
-           <string>!</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="btnSin">
-          <property name="text">
-           <string>sin</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
+        <item row="3" column="1">
          <widget class="QPushButton" name="btnCos">
           <property name="text">
            <string>cos</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="2">
+        <item row="3" column="2">
          <widget class="QPushButton" name="btnTan">
           <property name="text">
            <string>tan</string>
@@ -255,79 +234,114 @@
          </widget>
         </item>
         <item row="3" column="0">
+         <widget class="QPushButton" name="btnSin">
+          <property name="text">
+           <string>sin</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
          <widget class="QPushButton" name="btnArcSin">
           <property name="text">
            <string>arcsin</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="2" column="1">
+         <widget class="QPushButton" name="btnFact">
+          <property name="text">
+           <string>!</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="btnPi">
+          <property name="text">
+           <string>Pi</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
          <widget class="QPushButton" name="btnArcCos">
           <property name="text">
            <string>arccos</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="2">
-         <widget class="QPushButton" name="btnArcTan">
-          <property name="text">
-           <string>arctan</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="3">
+        <item row="5" column="3">
          <widget class="QPushButton" name="btnSciEqual">
           <property name="text">
            <string>=</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="3">
-         <widget class="QPushButton" name="btnBack">
+        <item row="4" column="2">
+         <widget class="QPushButton" name="btnArcTan">
           <property name="text">
-           <string>Back</string>
+           <string>arctan</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
+        <item row="5" column="0">
          <widget class="QPushButton" name="btnSinh">
           <property name="text">
            <string>sinh</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="1">
+        <item row="2" column="2">
+         <widget class="QPushButton" name="btnDegAndRad">
+          <property name="text">
+           <string>Deg/Rad</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
          <widget class="QPushButton" name="btnCosh">
           <property name="text">
            <string>cosh</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="2">
+        <item row="5" column="2">
          <widget class="QPushButton" name="btnTanh">
           <property name="text">
            <string>tanh</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="3">
+        <item row="4" column="3">
          <widget class="QPushButton" name="btnnPm">
           <property name="text">
            <string>nPr</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="3">
+        <item row="3" column="3">
          <widget class="QPushButton" name="btnnCm">
           <property name="text">
            <string>nCr</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="2">
-         <widget class="QPushButton" name="btnDegAndRad">
+        <item row="0" column="2">
+         <widget class="QPushButton" name="btnSciClear">
           <property name="text">
-           <string>Deg/Rad</string>
+           <string>Clear</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QPushButton" name="btnBack">
+          <property name="text">
+           <string>Back</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="btnSciDelete">
+          <property name="text">
+           <string>←</string>
           </property>
          </widget>
         </item>

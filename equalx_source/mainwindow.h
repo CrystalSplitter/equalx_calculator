@@ -115,6 +115,10 @@ private slots:
 
     void on_btnDegAndRad_clicked();
 
+    void on_btnSciClear_clicked();
+
+    void on_btnSciDelete_clicked();
+
 private:
     Ui::MainWindow *ui;
     void inputButtonClicked(QString input, bool useBrackets, bool appendOpenParen);

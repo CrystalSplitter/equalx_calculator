@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setContextMenuPolicy(Qt::CustomContextMenu);
     text = new QListWidgetItem;
     text->setText("");
+    ui->btnPi->setText("\u03c0");
     equation = new QListWidgetItem;
     StringCalculator::setup();
 }
@@ -58,7 +59,8 @@ void MainWindow::on_btnSinh_clicked() { MainWindow::inputButtonClicked("sinh", t
 void MainWindow::on_btnCosh_clicked() { MainWindow::inputButtonClicked("cosh", true, true); }
 void MainWindow::on_btnTanh_clicked() { MainWindow::inputButtonClicked("tanh", true, true); }
 void MainWindow::on_btnClear_clicked() { parseableString.clear(); }
-
+void MainWindow::on_btnSciClear_clicked(){parseableString.clear();}
+void MainWindow::on_btnSciDelete_clicked(){ui->btnDelete->click();}
 void MainWindow::on_btnDegAndRad_clicked()
 {
     if(useDegrees)
@@ -196,8 +198,9 @@ void MainWindow::on_btnAnswer_clicked()
 {
     if(ui->listDisplay->count() > 1)
     {
-        text->setText(text->text() + QString::number(value));
-        ui->listDisplay->addItem(text);
+        //text->setText(text->text() + QString::number(value));
+        MainWindow::inputButtonClicked(QString::number(value), false, false);
+        //ui->listDisplay->addItem(text);
     }
     else
     {
